@@ -27,10 +27,25 @@ const { label, id, placeholder, initialValue } = Astro.props;
 	import { DateTime } from 'luxon';
 	import cityTimezones from 'city-timezones';
 
+	interface TimezoneItem {
+		id: string;
+		region: string;
+		city: string;
+		abbr: string;
+		searchString: string;
+	}
+
+	interface CityMappingItem {
+		city: string;
+		timezone: string;
+		province?: string;
+		country: string;
+	}
+
 	// Timezone Data - Computed once per page load, shared by all instances
 	const ianaZones = Intl.supportedValuesOf('timeZone');
 	
-	const baseTimezoneData = ianaZones.map(zone => {
+	const baseTimezoneData: TimezoneItem[] = ianaZones.map(zone => {
 		const parts = zone.split('/');
 		const region = parts[0];
 		const city = parts[parts.length - 1].replace(/_/g, ' ');
@@ -39,25 +54,25 @@ const { label, id, placeholder, initialValue } = Astro.props;
 			id: zone,
 			region,
 			city,
-			abbr: now.offsetNameShort,
+			abbr: now.offsetNameShort || '',
 			searchString: `${zone} ${region} ${city} ${now.offsetNameShort}`.toLowerCase()
 		};
 	});
 
-	const cityData = cityTimezones.cityMapping.map((city: any) => {
+	const cityData: TimezoneItem[] = (cityTimezones.cityMapping as CityMappingItem[]).map(city => {
 		const now = DateTime.now().setZone(city.timezone);
 		return {
 			id: city.timezone,
 			region: city.province || city.country,
 			city: city.city,
-			abbr: now.offsetNameShort,
+			abbr: now.offsetNameShort || '',
 			searchString: `${city.city} ${city.province} ${city.country} ${city.timezone} ${now.offsetNameShort}`.toLowerCase()
 		};
 	});
 
 	const combinedData = [...baseTimezoneData, ...cityData];
 	const seen = new Set();
-	const timezoneData = combinedData.filter(item => {
+	const timezoneData: TimezoneItem[] = combinedData.filter(item => {
 		const key = `${item.city}-${item.id}`;
 		if (seen.has(key)) return false;
 		seen.add(key);
@@ -72,8 +87,21 @@ const { label, id, placeholder, initialValue } = Astro.props;
 			const searchInput = container.querySelector('.tz-search') as HTMLInputElement;
 			const hiddenInput = container.querySelector('input[type="hidden"]') as HTMLInputElement;
 			const dropdown = container.querySelector('.tz-dropdown') as HTMLDivElement;
+			let activeIndex = -1;
+			let currentFiltered: TimezoneItem[] = [];
 
 			container.setAttribute('data-initialized', 'true');
+
+			// Accessibility Setup
+			const listboxId = `listbox-${Math.random().toString(36).substr(2, 9)}`;
+			dropdown.id = listboxId;
+			dropdown.setAttribute('role', 'listbox');
+			
+			searchInput.setAttribute('role', 'combobox');
+			searchInput.setAttribute('aria-autocomplete', 'list');
+			searchInput.setAttribute('aria-expanded', 'false');
+			searchInput.setAttribute('aria-haspopup', 'listbox');
+			searchInput.setAttribute('aria-controls', listboxId);
 
 			// Set initial label if value exists
 			if (hiddenInput.value) {
@@ -83,9 +111,42 @@ const { label, id, placeholder, initialValue } = Astro.props;
 				}
 			}
 
+			function selectItem(z: TimezoneItem) {
+				hiddenInput.value = z.id;
+				searchInput.value = `${z.city} (${z.abbr})`;
+				closeDropdown();
+				hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+			}
+
+			function closeDropdown() {
+				dropdown.classList.add('hidden');
+				searchInput.setAttribute('aria-expanded', 'false');
+				activeIndex = -1;
+			}
+
+			function openDropdown() {
+				dropdown.classList.remove('hidden');
+				searchInput.setAttribute('aria-expanded', 'true');
+			}
+
+			function updateActiveItem() {
+				const items = dropdown.querySelectorAll('.tz-item');
+				items.forEach((item, index) => {
+					if (index === activeIndex) {
+						item.classList.add('active');
+						item.setAttribute('aria-selected', 'true');
+						(item as HTMLElement).scrollIntoView({ block: 'nearest' });
+						searchInput.setAttribute('aria-activedescendant', item.id);
+					} else {
+						item.classList.remove('active');
+						item.setAttribute('aria-selected', 'false');
+					}
+				});
+			}
+
 			function renderDropdown(filter = '') {
 				const filterLower = filter.toLowerCase();
-				const filtered = timezoneData
+				currentFiltered = timezoneData
 					.filter(z => z.searchString.includes(filterLower))
 					.sort((a, b) => {
 						const aCity = a.city.toLowerCase();
@@ -97,32 +158,27 @@ const { label, id, placeholder, initialValue } = Astro.props;
 					.slice(0, 50);
 
 				dropdown.innerHTML = '';
+				activeIndex = -1;
 				
-				filtered.forEach(z => {
+				currentFiltered.forEach((z, index) => {
 					const item = document.createElement('div');
 					item.className = 'tz-item';
-					item.tabIndex = 0;
+					item.id = `${listboxId}-option-${index}`;
+					item.setAttribute('role', 'option');
 					item.innerHTML = `
 						<div class="tz-item-main">${z.city} <small>${z.region}</small></div>
 						<div class="tz-item-meta">${z.abbr} — ${z.id}</div>
 					`;
 					
-					const selectItem = (e: Event) => {
-						e.stopPropagation(); // Prevent document click from firing
-						hiddenInput.value = z.id;
-						searchInput.value = `${z.city} (${z.abbr})`;
-						dropdown.classList.add('hidden');
-						hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
-					};
-
-					item.addEventListener('click', selectItem);
-					item.addEventListener('keydown', (e) => {
-						if (e.key === 'Enter') selectItem(e);
+					item.addEventListener('click', (e) => {
+						e.stopPropagation();
+						selectItem(z);
 					});
+					
 					dropdown.appendChild(item);
 				});
 
-				if (filtered.length === 0) {
+				if (currentFiltered.length === 0) {
 					const noResults = document.createElement('div');
 					noResults.className = 'tz-no-results';
 					noResults.textContent = 'No timezones found';
@@ -132,18 +188,53 @@ const { label, id, placeholder, initialValue } = Astro.props;
 
 			searchInput.addEventListener('focus', () => {
 				renderDropdown(searchInput.value);
-				dropdown.classList.remove('hidden');
+				openDropdown();
 			});
 
 			searchInput.addEventListener('input', () => {
 				renderDropdown(searchInput.value);
-				dropdown.classList.remove('hidden');
+				openDropdown();
+			});
+
+			searchInput.addEventListener('keydown', (e) => {
+				if (dropdown.classList.contains('hidden')) {
+					if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+						openDropdown();
+						renderDropdown(searchInput.value);
+					}
+					return;
+				}
+
+				switch (e.key) {
+					case 'ArrowDown':
+						e.preventDefault();
+						activeIndex = Math.min(activeIndex + 1, currentFiltered.length - 1);
+						updateActiveItem();
+						break;
+					case 'ArrowUp':
+						e.preventDefault();
+						activeIndex = Math.max(activeIndex - 1, 0);
+						updateActiveItem();
+						break;
+					case 'Enter':
+						if (activeIndex >= 0) {
+							e.preventDefault();
+							selectItem(currentFiltered[activeIndex]);
+						}
+						break;
+					case 'Escape':
+						closeDropdown();
+						break;
+					case 'Tab':
+						closeDropdown();
+						break;
+				}
 			});
 
 			// Close dropdown when clicking outside
 			document.addEventListener('click', (e) => {
 				if (!container.contains(e.target as Node)) {
-					dropdown.classList.add('hidden');
+					closeDropdown();
 				}
 			});
 		});
@@ -156,14 +247,14 @@ const { label, id, placeholder, initialValue } = Astro.props;
 	document.addEventListener('astro:page-load', initTimezoneSelectors);
 </script>
 
-<style>
+<style is:global>
 	.field {
 		margin-bottom: 1.2rem;
 		display: flex;
 		flex-direction: column;
 	}
 
-	label {
+	.field label {
 		font-size: 0.85rem;
 		margin-bottom: 0.4rem;
 		font-weight: 600;
@@ -206,5 +297,60 @@ const { label, id, placeholder, initialValue } = Astro.props;
 		overflow-x: hidden;
 		z-index: 10;
 		box-shadow: var(--shadow-lg);
+	}
+
+	.tz-item {
+		padding: var(--spacing-sm);
+		cursor: pointer;
+		border-bottom: 1px solid var(--border-color-soft);
+		transition: background-color 0.2s, color 0.2s;
+		outline: none;
+		display: flex;
+		flex-direction: column;
+		text-align: left;
+		background: var(--white);
+	}
+
+	.tz-item:last-child {
+		border-bottom: none;
+	}
+
+	.tz-item:hover, .tz-item:focus, .tz-item.active {
+		background-color: var(--light-blue);
+		color: var(--primary-black);
+	}
+
+	.tz-item.active {
+		outline: 2px solid var(--primary);
+		outline-offset: -2px;
+	}
+
+	.tz-item-main {
+		font-weight: 600;
+		font-size: 0.95rem;
+	}
+
+	.tz-item-main small {
+		font-weight: normal;
+		color: var(--text-muted);
+		margin-left: var(--spacing-xs);
+	}
+
+	.tz-item-meta {
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		margin-top: 0.2rem;
+	}
+
+	.tz-item:hover small, .tz-item:focus small, .tz-item.active small,
+	.tz-item:hover .tz-item-meta, .tz-item:focus .tz-item-meta, .tz-item.active .tz-item-meta {
+		color: oklch(from var(--primary-black) l c h / 0.7);
+	}
+
+	.tz-no-results {
+		padding: var(--spacing-sm);
+		color: var(--text-muted);
+		text-align: center;
+		font-style: italic;
 	}
 </style>

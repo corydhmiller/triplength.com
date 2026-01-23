@@ -65,7 +65,7 @@ const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 </Layout>
 
 <script>
-	import { DateTime } from 'luxon';
+	import { calculateTripDuration } from '../utils/duration';
 
 	const form = document.getElementById('trip-form') as HTMLFormElement;
 	const resultDiv = document.getElementById('result') as HTMLDivElement;
@@ -74,46 +74,23 @@ const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 	form.addEventListener('submit', (e) => {
 		e.preventDefault();
 
-		const dep = {
+		const departure = {
 			date: (document.getElementById('dep-date') as HTMLInputElement).value,
 			time: (document.getElementById('dep-time') as HTMLInputElement).value,
-			zone: (document.getElementById('dep-zone') as HTMLInputElement).value
+			timezone: (document.getElementById('dep-zone') as HTMLInputElement).value
 		};
 
-		const arr = {
+		const arrival = {
 			date: (document.getElementById('arr-date') as HTMLInputElement).value,
 			time: (document.getElementById('arr-time') as HTMLInputElement).value,
-			zone: (document.getElementById('arr-zone') as HTMLInputElement).value
+			timezone: (document.getElementById('arr-zone') as HTMLInputElement).value
 		};
 
-		const depDt = DateTime.fromISO(`${dep.date}T${dep.time}`, { zone: dep.zone });
-		const arrDt = DateTime.fromISO(`${arr.date}T${arr.time}`, { zone: arr.zone });
-
-		if (!depDt.isValid || !arrDt.isValid) {
+		try {
+			const result = calculateTripDuration(departure, arrival);
+			durationText.textContent = result.formatted;
+		} catch (error) {
 			durationText.textContent = 'Invalid date or time selected.';
-			resultDiv.classList.remove('hidden');
-			return;
-		}
-
-		if (arrDt < depDt) {
-			durationText.textContent = 'Arrival cannot be before departure!';
-		} else {
-			const diff = arrDt.diff(depDt, ['hours', 'minutes']);
-			const hours = Math.floor(diff.hours);
-			const minutes = Math.floor(diff.minutes);
-
-			const hLabel = hours === 1 ? 'hour' : 'hours';
-			const mLabel = minutes === 1 ? 'minute' : 'minutes';
-			
-			let text = '';
-			if (hours > 0) text += `${hours} ${hLabel}`;
-			if (minutes > 0) {
-				if (text) text += ' and ';
-				text += `${minutes} ${mLabel}`;
-			}
-			if (hours === 0 && minutes === 0) text = '0 minutes';
-			
-			durationText.textContent = text;
 		}
 
 		resultDiv.classList.remove('hidden');
