@@ -1,5 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import TimezoneSelect from '../components/TimezoneSelect.astro';
+import { DateTime } from 'luxon';
+
+const userZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const now = DateTime.now();
+const defaultDepDate = now.toISODate();
+const defaultDepTime = now.toFormat('HH:mm');
+const defaultArrDate = now.toISODate();
+const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 ---
 
 <Layout>
@@ -12,40 +21,36 @@ import Layout from '../layouts/Layout.astro';
 					<h2>Departure</h2>
 					<div class="field">
 						<label for="dep-date">Date</label>
-						<input type="date" id="dep-date" required />
+						<input type="date" id="dep-date" value={defaultDepDate} required />
 					</div>
 					<div class="field">
 						<label for="dep-time">Time</label>
-						<input type="time" id="dep-time" required />
+						<input type="time" id="dep-time" value={defaultDepTime} required />
 					</div>
-					<div class="field timezone-field">
-						<label>Timezone</label>
-						<div class="searchable-select" id="dep-zone-container">
-							<input type="text" class="tz-search" placeholder="Search city, region or code (e.g. Vienna, Europe, CEST)" />
-							<input type="hidden" id="dep-zone" required />
-							<div class="tz-dropdown hidden"></div>
-						</div>
-					</div>
+					<TimezoneSelect 
+						label="Timezone" 
+						id="dep-zone" 
+						initialValue={userZone} 
+						placeholder="Departure city, region..."
+					/>
 				</section>
 
 				<section>
 					<h2>Arrival</h2>
 					<div class="field">
 						<label for="arr-date">Date</label>
-						<input type="date" id="arr-date" required />
+						<input type="date" id="arr-date" value={defaultArrDate} required />
 					</div>
 					<div class="field">
 						<label for="arr-time">Time</label>
-						<input type="time" id="arr-time" required />
+						<input type="time" id="arr-time" value={defaultArrTime} required />
 					</div>
-					<div class="field timezone-field">
-						<label>Timezone</label>
-						<div class="searchable-select" id="arr-zone-container">
-							<input type="text" class="tz-search" placeholder="Search city, region or code (e.g. Vienna, Europe, CEST)" />
-							<input type="hidden" id="arr-zone" required />
-							<div class="tz-dropdown hidden"></div>
-						</div>
-					</div>
+					<TimezoneSelect 
+						label="Timezone" 
+						id="arr-zone" 
+						initialValue={userZone} 
+						placeholder="Arrival city, region..."
+					/>
 				</section>
 			</div>
 
@@ -61,143 +66,10 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
 	import { DateTime } from 'luxon';
-	import cityTimezones from 'city-timezones';
 
 	const form = document.getElementById('trip-form') as HTMLFormElement;
 	const resultDiv = document.getElementById('result') as HTMLDivElement;
 	const durationText = document.getElementById('duration-text') as HTMLParagraphElement;
-
-	// Timezone Data
-	const ianaZones = Intl.supportedValuesOf('timeZone');
-	const userZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-	// Map IANA zones to our searchable format
-	const baseTimezoneData = ianaZones.map(zone => {
-		const parts = zone.split('/');
-		const region = parts[0];
-		const city = parts[parts.length - 1].replace(/_/g, ' ');
-		
-		const now = DateTime.now().setZone(zone);
-		const abbr = now.offsetNameShort;
-
-		return {
-			id: zone,
-			region,
-			city,
-			abbr,
-			searchString: `${zone} ${region} ${city} ${abbr}`.toLowerCase(),
-			isCityMatch: false
-		};
-	});
-
-	// Add data from city-timezones for a much broader city search
-	const cityData = cityTimezones.cityMapping.map((city: any) => {
-		const now = DateTime.now().setZone(city.timezone);
-		const abbr = now.offsetNameShort;
-
-		return {
-			id: city.timezone,
-			region: city.province || city.country,
-			city: city.city,
-			abbr: abbr,
-			searchString: `${city.city} ${city.province} ${city.country} ${city.timezone} ${abbr}`.toLowerCase(),
-			isCityMatch: true
-		};
-	});
-
-	// Combine and deduplicate by (city + id) to avoid showing the same thing twice
-	// but keeping different cities that share the same timezone
-	const combinedData = [...baseTimezoneData, ...cityData];
-	const seen = new Set();
-	const timezoneData = combinedData.filter(item => {
-		const key = `${item.city}-${item.id}`;
-		if (seen.has(key)) return false;
-		seen.add(key);
-		return true;
-	});
-
-	function setupSearchableSelect(containerId: string, hiddenInputId: string, initialValue: string) {
-		const container = document.getElementById(containerId)!;
-		const searchInput = container.querySelector('.tz-search') as HTMLInputElement;
-		const hiddenInput = document.getElementById(hiddenInputId) as HTMLInputElement;
-		const dropdown = container.querySelector('.tz-dropdown') as HTMLDivElement;
-
-		hiddenInput.value = initialValue;
-		const initialZone = timezoneData.find(z => z.id === initialValue);
-		if (initialZone) {
-			searchInput.value = `${initialZone.city} (${initialZone.abbr})`;
-		}
-
-		function renderDropdown(filter = '') {
-			const filterLower = filter.toLowerCase();
-			// Filter and sort: exact city matches first
-			const filtered = timezoneData
-				.filter(z => z.searchString.includes(filterLower))
-				.sort((a, b) => {
-					const aCity = a.city.toLowerCase();
-					const bCity = b.city.toLowerCase();
-					if (aCity === filterLower && bCity !== filterLower) return -1;
-					if (bCity === filterLower && aCity !== filterLower) return 1;
-					return 0;
-				})
-				.slice(0, 50);
-
-			dropdown.innerHTML = '';
-			
-			filtered.forEach(z => {
-				const item = document.createElement('div');
-				item.className = 'tz-item';
-				item.tabIndex = 0;
-				item.innerHTML = `
-					<div class="tz-item-main">${z.city} <small>${z.region}</small></div>
-					<div class="tz-item-meta">${z.abbr} — ${z.id}</div>
-				`;
-				
-				const selectItem = () => {
-					hiddenInput.value = z.id;
-					searchInput.value = `${z.city} (${z.abbr})`;
-					dropdown.classList.add('hidden');
-				};
-
-				item.onclick = selectItem;
-				item.onkeydown = (e) => {
-					if (e.key === 'Enter') selectItem();
-				};
-				dropdown.appendChild(item);
-			});
-
-			if (filtered.length === 0) {
-				dropdown.innerHTML = '<div class="tz-no-results">No timezones found</div>';
-			}
-		}
-
-		searchInput.onfocus = () => {
-			renderDropdown(searchInput.value);
-			dropdown.classList.remove('hidden');
-		};
-
-		searchInput.oninput = () => {
-			renderDropdown(searchInput.value);
-			dropdown.classList.remove('hidden');
-		};
-
-		// Close dropdown when clicking outside
-		document.addEventListener('click', (e) => {
-			if (!container.contains(e.target as Node)) {
-				dropdown.classList.add('hidden');
-			}
-		});
-	}
-
-	setupSearchableSelect('dep-zone-container', 'dep-zone', userZone);
-	setupSearchableSelect('arr-zone-container', 'arr-zone', userZone);
-
-	// Set default dates to today
-	const now = DateTime.now();
-	(document.getElementById('dep-date') as HTMLInputElement).value = now.toISODate()!;
-	(document.getElementById('dep-time') as HTMLInputElement).value = now.toFormat('HH:mm');
-	(document.getElementById('arr-date') as HTMLInputElement).value = now.toISODate()!;
-	(document.getElementById('arr-time') as HTMLInputElement).value = now.plus({ hours: 2 }).toFormat('HH:mm');
 
 	form.addEventListener('submit', (e) => {
 		e.preventDefault();
@@ -223,13 +95,13 @@ import Layout from '../layouts/Layout.astro';
 			return;
 		}
 
-		const diff = arrDt.diff(depDt, ['hours', 'minutes']);
-		const hours = Math.floor(diff.hours);
-		const minutes = Math.floor(diff.minutes);
-
 		if (arrDt < depDt) {
 			durationText.textContent = 'Arrival cannot be before departure!';
 		} else {
+			const diff = arrDt.diff(depDt, ['hours', 'minutes']);
+			const hours = Math.floor(diff.hours);
+			const minutes = Math.floor(diff.minutes);
+
 			const hLabel = hours === 1 ? 'hour' : 'hours';
 			const mLabel = minutes === 1 ? 'minute' : 'minutes';
 			
@@ -311,75 +183,6 @@ import Layout from '../layouts/Layout.astro';
 		box-shadow: 0 0 0 3px var(--primary-soft);
 	}
 
-	.searchable-select {
-		position: relative;
-	}
-
-	.tz-dropdown {
-		position: absolute;
-		top: calc(100% + 4px);
-		left: 0;
-		right: 0;
-		background: var(--white);
-		border: 1px solid var(--border-color);
-		border-radius: var(--radius-lg);
-		max-height: 300px;
-		overflow-y: auto;
-		z-index: 10;
-		box-shadow: var(--shadow-lg);
-	}
-
-	:global(.tz-item) {
-		padding: var(--spacing-sm);
-		cursor: pointer;
-		border-bottom: 1px solid var(--border-color-soft);
-		transition: background-color 0.2s, color 0.2s;
-		outline: none;
-		display: flex;
-		flex-direction: column;
-	}
-
-	:global(.tz-item:last-child) {
-		border-bottom: none;
-	}
-
-	:global(.tz-item:hover), :global(.tz-item:focus) {
-		background-color: var(--light-blue);
-		color: oklch(20% 0.05 234); /* Specific contrast color */
-	}
-
-	:global(.tz-item:hover small), :global(.tz-item:focus small) {
-		color: oklch(30% 0.05 234);
-	}
-
-	:global(.tz-item:hover .tz-item-meta), :global(.tz-item:focus .tz-item-meta) {
-		color: oklch(40% 0.05 234);
-	}
-
-	:global(.tz-item-main) {
-		font-weight: 600;
-		font-size: 0.95rem;
-	}
-
-	:global(.tz-item-main small) {
-		font-weight: normal;
-		color: var(--text-muted);
-		margin-left: var(--spacing-xs);
-	}
-
-	:global(.tz-item-meta) {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		margin-top: 0.2rem;
-	}
-
-	:global(.tz-no-results) {
-		padding: var(--spacing-sm);
-		color: var(--text-muted);
-		text-align: center;
-		font-style: italic;
-	}
-
 	button {
 		width: 100%;
 		max-width: 400px;
@@ -431,7 +234,4 @@ import Layout from '../layouts/Layout.astro';
 		color: var(--primary);
 	}
 
-	.hidden {
-		display: none;
-	}
 </style>

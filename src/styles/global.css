@@ -213,4 +213,65 @@
 		font-weight: 800;
 		margin-bottom: var(--spacing-lg);
 	}
+
+	/* Timezone Dropdown Items (Dynamic) */
+	.tz-item {
+		padding: var(--spacing-sm);
+		cursor: pointer;
+		border-bottom: 1px solid var(--border-color-soft);
+		transition: background-color 0.2s, color 0.2s;
+		outline: none;
+		display: flex;
+		flex-direction: column;
+		text-align: left;
+		background: var(--white);
+	}
+
+	.tz-item:last-child {
+		border-bottom: none;
+	}
+
+	.tz-item:hover, .tz-item:focus {
+		background-color: var(--light-blue);
+		color: var(--primary-black);
+	}
+
+	.tz-item-main {
+		font-weight: 600;
+		font-size: 0.95rem;
+	}
+
+	.tz-item-main small {
+		font-weight: normal;
+		color: var(--text-muted);
+		margin-left: var(--spacing-xs);
+	}
+
+	.tz-item-meta {
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		margin-top: 0.2rem;
+	}
+
+	.tz-item:hover small, .tz-item:focus small,
+	.tz-item:hover .tz-item-meta, .tz-item:focus .tz-item-meta {
+		color: oklch(from var(--primary-black) l c h / 0.7);
+	}
+
+	.tz-no-results {
+		padding: var(--spacing-sm);
+		color: var(--text-muted);
+		text-align: center;
+		font-style: italic;
+	}
+
+	.hidden {
+		display: none !important;
+	}
 }
+
+/* Global utility classes outside of layers if needed, or inside theme */
+.hidden {
+	display: none !important;
+}
+
