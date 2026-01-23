@@ -1,20 +1,20 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import TimezoneSelect from '../components/TimezoneSelect.astro';
-import { DateTime } from 'luxon';
+import Layout from "../layouts/Layout.astro";
+import TimezoneSelect from "../components/TimezoneSelect.astro";
+import { DateTime } from "luxon";
 
 const userZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const now = DateTime.now();
 const defaultDepDate = now.toISODate();
-const defaultDepTime = now.toFormat('HH:mm');
+const defaultDepTime = now.toFormat("HH:mm");
 const defaultArrDate = now.toISODate();
-const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
+const defaultArrTime = now.plus({ hours: 2 }).toFormat("HH:mm");
 ---
 
 <Layout>
 	<main>
 		<h1>How long will my trip be?</h1>
-		
+
 		<form id="trip-form">
 			<div class="grid">
 				<section>
@@ -27,12 +27,7 @@ const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 						<label for="dep-time">Time</label>
 						<input type="time" id="dep-time" value={defaultDepTime} required />
 					</div>
-					<TimezoneSelect 
-						label="Timezone" 
-						id="dep-zone" 
-						initialValue={userZone} 
-						placeholder="Departure city, region..."
-					/>
+					<TimezoneSelect label="Timezone" id="dep-zone" initialValue={userZone} placeholder="Departure city, region..." />
 				</section>
 
 				<section>
@@ -45,12 +40,7 @@ const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 						<label for="arr-time">Time</label>
 						<input type="time" id="arr-time" value={defaultArrTime} required />
 					</div>
-					<TimezoneSelect 
-						label="Timezone" 
-						id="arr-zone" 
-						initialValue={userZone} 
-						placeholder="Arrival city, region..."
-					/>
+					<TimezoneSelect label="Timezone" id="arr-zone" initialValue={userZone} placeholder="Arrival city, region..." />
 				</section>
 			</div>
 
@@ -58,43 +48,70 @@ const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 		</form>
 
 		<div id="result" class="result hidden">
-			<h3>Trip Duration</h3>
+			<h3>Total trip duration</h3>
 			<p id="duration-text"></p>
 		</div>
+
+		<section class="how-to-use">
+			<h2>How to Use This Calculator</h2>
+			<div class="steps">
+				<div class="step">
+					<div class="step-number">1</div>
+					<div class="step-content">
+						<h3>Enter departure details</h3>
+						<p>Select the date and time you'll be leaving, and search for your departure city or timezone. This could be leaving from home, airport, whatever you want to measure against.</p>
+					</div>
+				</div>
+				<div class="step">
+					<div class="step-number">2</div>
+					<div class="step-content">
+						<h3>Enter arrival details</h3>
+						<p>Do the same for your arrival.</p>
+					</div>
+				</div>
+				<div class="step">
+					<div class="step-number">3</div>
+					<div class="step-content">
+						<h3>Calculate</h3>
+						<p>Hit the button to see exactly how many hours and minutes you'll be in transit.DST and timezone differences are automatically handled.</p>
+					</div>
+				</div>
+			</div>
+		</section>
 	</main>
 </Layout>
 
 <script>
-	import { calculateTripDuration } from '../utils/duration';
+	import { calculateTripDuration } from "../utils/duration";
 
-	const form = document.getElementById('trip-form') as HTMLFormElement;
-	const resultDiv = document.getElementById('result') as HTMLDivElement;
-	const durationText = document.getElementById('duration-text') as HTMLParagraphElement;
+	const form = document.getElementById("trip-form") as HTMLFormElement;
+	const resultDiv = document.getElementById("result") as HTMLDivElement;
+	const durationText = document.getElementById("duration-text") as HTMLParagraphElement;
 
-	form.addEventListener('submit', (e) => {
+	form.addEventListener("submit", e => {
 		e.preventDefault();
 
 		const departure = {
-			date: (document.getElementById('dep-date') as HTMLInputElement).value,
-			time: (document.getElementById('dep-time') as HTMLInputElement).value,
-			timezone: (document.getElementById('dep-zone') as HTMLInputElement).value
+			date: (document.getElementById("dep-date") as HTMLInputElement).value,
+			time: (document.getElementById("dep-time") as HTMLInputElement).value,
+			timezone: (document.getElementById("dep-zone") as HTMLInputElement).value,
 		};
 
 		const arrival = {
-			date: (document.getElementById('arr-date') as HTMLInputElement).value,
-			time: (document.getElementById('arr-time') as HTMLInputElement).value,
-			timezone: (document.getElementById('arr-zone') as HTMLInputElement).value
+			date: (document.getElementById("arr-date") as HTMLInputElement).value,
+			time: (document.getElementById("arr-time") as HTMLInputElement).value,
+			timezone: (document.getElementById("arr-zone") as HTMLInputElement).value,
 		};
 
 		try {
 			const result = calculateTripDuration(departure, arrival);
 			durationText.textContent = result.formatted;
 		} catch (error) {
-			durationText.textContent = 'Invalid date or time selected.';
+			durationText.textContent = "Invalid date or time selected.";
 		}
 
-		resultDiv.classList.remove('hidden');
-		resultDiv.scrollIntoView({ behavior: 'smooth' });
+		resultDiv.classList.remove("hidden");
+		resultDiv.scrollIntoView({ behavior: "smooth" });
 	});
 </script>
 
@@ -151,7 +168,9 @@ const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 		font-size: 1rem;
 		color: var(--text);
 		background: var(--white);
-		transition: border-color 0.2s, box-shadow 0.2s;
+		transition:
+			border-color 0.2s,
+			box-shadow 0.2s;
 	}
 
 	input:focus {
@@ -166,19 +185,22 @@ const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 		margin: 0 auto;
 		display: block;
 		padding: 1.2rem;
-		background-color: var(--primary);
+		background-color: var(--primary-hover);
 		color: white;
 		border: none;
 		border-radius: var(--radius-lg);
 		font-size: 1.2rem;
 		font-weight: 700;
 		cursor: pointer;
-		transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+		transition:
+			transform 0.1s,
+			background 0.2s,
+			box-shadow 0.2s;
 		box-shadow: 0 4px 12px oklch(from var(--primary) l c h / 0.3);
 	}
 
 	button:hover {
-		background-color: var(--primary-hover);
+		background-color: var(--primary-black);
 		transform: translateY(-2px);
 		box-shadow: 0 6px 16px oklch(from var(--primary) l c h / 0.4);
 	}
@@ -190,15 +212,13 @@ const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 	.result {
 		margin-top: var(--spacing-xl);
 		padding: 2.5rem;
-		background: var(--white);
-		border: 2px solid var(--accent);
 		border-radius: var(--radius-xl);
 		text-align: center;
 	}
 
 	.result h3 {
 		margin-top: 0;
-		font-size: 1.1rem;
+		font-size: clamp(1rem, 2vw, 1.1rem);
 		color: var(--accent-dark);
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
@@ -206,9 +226,63 @@ const defaultArrTime = now.plus({ hours: 2 }).toFormat('HH:mm');
 
 	.result p {
 		margin: var(--spacing-xs) 0 0;
-		font-size: 2.5rem;
+		font-size: clamp(2rem, 5vw, 4rem);
 		font-weight: 800;
-		color: var(--primary);
+		color: var(--primary-black);
 	}
 
+	.how-to-use {
+		margin-top: var(--spacing-xxl);
+		padding: var(--spacing-xl);
+		background: oklch(from var(--white) l c h / 0.9);
+		border-radius: var(--radius-xl);
+		border: 1px solid var(--border-color-soft);
+	}
+
+	.how-to-use h2 {
+		display: block;
+		text-align: center;
+		margin-bottom: var(--spacing-xl);
+		border-bottom: none;
+		font-size: 1.8rem;
+		font-weight: 800;
+	}
+
+	.steps {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: var(--spacing-xl);
+	}
+
+	.step {
+		display: flex;
+		gap: var(--spacing-md);
+	}
+
+	.step-number {
+		flex-shrink: 0;
+		width: 40px;
+		height: 40px;
+		background: var(--primary);
+		color: white;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 800;
+		font-size: 1.2rem;
+		box-shadow: 0 4px 8px oklch(from var(--primary) l c h / 0.2);
+	}
+
+	.step-content h3 {
+		font-size: 1.1rem;
+		margin-bottom: 0.5rem;
+		color: var(--text);
+	}
+
+	.step-content p {
+		font-size: 0.95rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+	}
 </style>

@@ -39,7 +39,7 @@ export function calculateTripDuration(
       hours: 0,
       minutes: 0,
       totalMinutes: 0,
-      formatted: 'Arrival cannot be before departure'
+      formatted: 'What...no. Arrival cannot be before departure.'
     };
   }
 

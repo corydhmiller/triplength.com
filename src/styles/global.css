@@ -174,7 +174,7 @@
 		--spacing-md: 1.5rem;
 		--spacing-lg: 2rem;
 		--spacing-xl: 3rem;
-		--spacing-xxl: 4rem;
+		--spacing-xxl: 8rem;
 
 		--shadow-sm: 0 2px 4px oklch(0% 0 0 / 0.05);
 		--shadow-md: 0 4px 12px oklch(0% 0 0 / 0.08);
@@ -187,22 +187,28 @@
 	button,
 	select,
 	textarea {
-		font-family: 'Rubik', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+		font-family: "Rubik", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	}
 
 	html,
 	body {
 		background-color: var(--bg);
 		color: var(--text);
-		display: flex;
-		justify-content: center;
 		min-height: 100vh;
 	}
 
-	main {
-		max-width: 1440px;
+	body {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 		width: 100%;
-		margin: var(--spacing-xxl) 0;
+	}
+
+	main {
+		max-width: 1240px;
+		width: 100%;
+		margin-top: var(--spacing-xl);
+		margin-bottom: var(--spacing-xxl);
 		padding: var(--spacing-xl) 24px;
 		border-radius: var(--radius-lg);
 	}
@@ -212,11 +218,10 @@
 		color: var(--primary-black);
 		font-weight: 800;
 		margin-bottom: var(--spacing-lg);
+		font-size: clamp(2rem, 5vw, 4rem);
 	}
 
 	.hidden {
 		display: none !important;
 	}
 }
-
-
