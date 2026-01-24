@@ -10,7 +10,11 @@ const rubik = Rubik({
 
 export const metadata: Metadata = {
 	title: "TripLength - How long will my trip be?",
-	description: "Easily calculate travel duration between locations in different timezones with automatic DST handling.",
+	description: "Easily calculate travel duration between locations with automatic timezone handling.",
+	robots: {
+		index: true,
+		follow: true,
+	},
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
