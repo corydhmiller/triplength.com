@@ -16,6 +16,7 @@ export function useSavedTimezones() {
 	const [savedTimezones, setSavedTimezones] = useState<SavedTimezone[]>([]);
 
 	// Load from localStorage on mount
+	// TODO: Don't think this needs to be useEffect, it's not a side effect
 	useEffect(() => {
 		try {
 			const stored = localStorage.getItem(STORAGE_KEY);

@@ -2,9 +2,9 @@
 
 import cityTimezones from "city-timezones";
 import { DateTime } from "luxon";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSavedTimezones } from "../hooks/useSavedTimezones";
-import SavedTimezones from "./SavedTimezones";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSavedTimezones } from "@hooks/useSavedTimezones";
+import SavedTimezones from "@components/SavedTimezones";
 
 interface TimezoneItem {
 	id: string;

@@ -2,10 +2,10 @@
 
 import { DateTime } from "luxon";
 import React, { useCallback, useEffect, useState } from "react";
-import { calculateTripDuration } from "../utils/duration";
-import DurationResult from "./DurationResult";
-import SubmitButton from "./SubmitButton";
-import TripCard from "./TripCard";
+import { calculateTripDuration } from "../../utils/duration";
+import DurationResult from "@/components/DurationResult";
+import SubmitButton from "@/components/SubmitButton";
+import TripCard from "@components/TripCard";
 
 export default function TripForm() {
 	const [departure, setDeparture] = useState(() => ({

@@ -1,9 +1,9 @@
 "use client";
 
 import { DateTime } from "luxon";
-import FormField from "./FormField";
-import NowButton from "./NowButton";
-import TimezoneSelect from "./TimezoneSelect";
+import FormField from "../FormField";
+import NowButton from "../NowButton";
+import TimezoneSelect from "../TimezoneSelect";
 
 interface TripData {
 	date: string;

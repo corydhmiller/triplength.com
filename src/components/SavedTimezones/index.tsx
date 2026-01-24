@@ -1,6 +1,6 @@
 "use client";
 
-import { SavedTimezone } from "../hooks/useSavedTimezones";
+import { SavedTimezone } from "@hooks/useSavedTimezones";
 
 interface SavedTimezonesProps {
 	timezones: SavedTimezone[];
