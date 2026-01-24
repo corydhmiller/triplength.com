@@ -217,16 +217,19 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 
 				{isOpen && (
 					<div id={`${id}-listbox`} className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border border-border-color rounded-lg max-h-[300px] overflow-y-auto overflow-x-hidden z-10 shadow-lg" ref={dropdownRef} role="listbox" aria-label={`${label} options`}>
-						{filteredData.map((z, index) => (
-							<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-border-color-soft last:border-b-0 transition-all flex flex-col text-left bg-white outline-none hover:bg-light-blue hover:text-primary-black focus:bg-light-blue focus:text-primary-black ${index === activeIndex ? "bg-light-blue text-primary-black outline-2 outline-primary -outline-offset-2" : ""}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
-								<div className="font-semibold text-[0.95rem]">
-									{z.city} <small className="font-normal text-text-muted ml-xs group-hover:text-primary-black/70 group-focus:text-primary-black/70">{z.region}</small>
+						{filteredData.map((z, index) => {
+							const isActive = index === activeIndex;
+							return (
+								<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-border-color-soft last:border-b-0 transition-all flex flex-col text-left outline-none ${isActive ? "bg-light-blue text-primary-black" : "bg-white hover:bg-light-blue hover:text-primary-black"}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
+									<div className="font-semibold text-[0.95rem]">
+										{z.city} <small className={`font-normal ml-xs ${isActive ? "text-primary-black/70" : "text-text-muted group-hover:text-primary-black/70"}`}>{z.region}</small>
+									</div>
+									<div className={`text-[0.75rem] mt-[0.2rem] ${isActive ? "text-primary-black/70" : "text-text-muted group-hover:text-primary-black/70"}`}>
+										{z.abbr} — {z.id}
+									</div>
 								</div>
-								<div className="text-[0.75rem] text-text-muted mt-[0.2rem] group-hover:text-primary-black/70 group-focus:text-primary-black/70">
-									{z.abbr} — {z.id}
-								</div>
-							</div>
-						))}
+							);
+						})}
 						{filteredData.length === 0 && (
 							<div className="p-sm text-text-muted text-center italic" role="status">
 								No timezones found
