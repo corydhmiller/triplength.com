@@ -3,6 +3,8 @@
 import cityTimezones from "city-timezones";
 import { DateTime } from "luxon";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useSavedTimezones } from "../hooks/useSavedTimezones";
+import SavedTimezones from "./SavedTimezones";
 
 interface TimezoneItem {
 	id: string;
@@ -85,6 +87,7 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const timezoneData = getTimezoneData();
+	const { savedTimezones, saveTimezone } = useSavedTimezones();
 
 	const filteredData = useMemo(() => {
 		const filterLower = searchValue.toLowerCase();
@@ -128,6 +131,13 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 		setSearchValue(`${z.city} (${z.abbr})`);
 		setIsOpen(false);
 		onChange?.(z.id);
+
+		// Save to recent timezones
+		saveTimezone({
+			id: z.id,
+			city: z.city,
+			abbr: z.abbr,
+		});
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -184,6 +194,13 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 		}
 	}, [activeIndex]);
 
+	const handleSavedTimezoneSelect = (tz: { id: string; city: string; abbr: string }) => {
+		const zone = timezoneData.find(z => z.id === tz.id);
+		if (zone) {
+			handleSelect(zone);
+		}
+	};
+
 	return (
 		<div className="flex flex-col mb-[1.2rem] relative" ref={containerRef}>
 			<label htmlFor={`${id}-input`} className="text-[0.85rem] mb-[0.4rem] font-semibold text-text uppercase tracking-[0.05em]">
@@ -238,6 +255,8 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 					</div>
 				)}
 			</div>
+
+			<SavedTimezones timezones={savedTimezones} onSelect={handleSavedTimezoneSelect} />
 		</div>
 	);
 }
