@@ -40,7 +40,7 @@ export default function TripCard({ title, type, data, onChange }: TripCardProps)
 				<input type="date" id={`${prefix}-date`} value={data.date} onChange={e => onChange({ date: e.target.value })} required aria-label={`${title} date`} aria-required="true" className="p-3 border border-border-color rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)]" />
 			</FormField>
 
-			<FormField label="Time" id={`${prefix}-time`}>
+			<FormField label="Time (24-hour)" id={`${prefix}-time`}>
 				<input type="time" id={`${prefix}-time`} value={data.time} onChange={e => onChange({ time: e.target.value })} required aria-label={`${title} time`} aria-required="true" className="p-3 border border-border-color rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)]" />
 			</FormField>
 
