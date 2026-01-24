@@ -1,6 +1,5 @@
 import TripForm from "../components/TripForm";
 import HowToUse from "../components/HowToUse";
-import ErrorBoundary from "../components/ErrorBoundary";
 
 export default function Home() {
 	return (
@@ -11,9 +10,7 @@ export default function Home() {
 					<h3>A simple tool to calculate the duration of any trip.</h3>
 				</div>
 
-				<ErrorBoundary>
-					<TripForm />
-				</ErrorBoundary>
+				<TripForm />
 
 				<HowToUse />
 			</main>
