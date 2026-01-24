@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import { DateTime } from "luxon";
+import React, { useCallback, useEffect, useState } from "react";
 import { calculateTripDuration } from "../utils/duration";
-import TripCard from "./TripCard";
 import DurationResult from "./DurationResult";
 import SubmitButton from "./SubmitButton";
+import TripCard from "./TripCard";
 
 export default function TripForm() {
 	const [departure, setDeparture] = useState({
@@ -40,27 +40,39 @@ export default function TripForm() {
 		});
 	}, []);
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		setError(null);
-		setResult(null);
+	// PERFORMANCE FIX: Stabilize callbacks with useCallback
+	const handleDepartureChange = useCallback((updates: Partial<typeof departure>) => {
+		setDeparture(prev => ({ ...prev, ...updates }));
+	}, []);
 
-		try {
-			const durationResult = calculateTripDuration(departure, arrival);
-			setResult(durationResult.formatted);
-		} catch (err) {
-			setError("Invalid date or time selected.");
-		}
-	};
+	const handleArrivalChange = useCallback((updates: Partial<typeof arrival>) => {
+		setArrival(prev => ({ ...prev, ...updates }));
+	}, []);
+
+	const handleSubmit = useCallback(
+		(e: React.FormEvent) => {
+			e.preventDefault();
+			setError(null);
+			setResult(null);
+
+			try {
+				const durationResult = calculateTripDuration(departure, arrival);
+				setResult(durationResult.formatted);
+			} catch (err) {
+				setError("Invalid date or time selected.");
+			}
+		},
+		[departure, arrival]
+	);
 
 	return (
 		<>
-			<form id="trip-form" onSubmit={handleSubmit}>
+			<form id="trip-form" onSubmit={handleSubmit} aria-describedby="trip-form-description">
 				<DurationResult result={result} error={error} />
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-lg mb-lg">
-					<TripCard title="Departure" type="departure" data={departure} onChange={updates => setDeparture(prev => ({ ...prev, ...updates }))} />
+					<TripCard title="Departure" type="departure" data={departure} onChange={handleDepartureChange} />
 
-					<TripCard title="Arrival" type="arrival" data={arrival} onChange={updates => setArrival(prev => ({ ...prev, ...updates }))} />
+					<TripCard title="Arrival" type="arrival" data={arrival} onChange={handleArrivalChange} />
 				</div>
 
 				<SubmitButton label="Calculate Duration" />

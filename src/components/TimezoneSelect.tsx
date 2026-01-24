@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { DateTime } from "luxon";
 import cityTimezones from "city-timezones";
+import { DateTime } from "luxon";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 interface TimezoneItem {
 	id: string;
@@ -144,6 +144,7 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 		if (!isOpen) {
 			if (e.key === "ArrowDown" || e.key === "ArrowUp") {
 				setIsOpen(true);
+				setActiveIndex(0);
 			}
 			return;
 		}
@@ -157,17 +158,28 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 				e.preventDefault();
 				setActiveIndex(prev => Math.max(prev - 1, 0));
 				break;
+			case "Home":
+				e.preventDefault();
+				setActiveIndex(0);
+				break;
+			case "End":
+				e.preventDefault();
+				setActiveIndex(filteredData.length - 1);
+				break;
 			case "Enter":
-				if (activeIndex >= 0) {
+				if (activeIndex >= 0 && filteredData[activeIndex]) {
 					e.preventDefault();
 					handleSelect(filteredData[activeIndex]);
 				}
 				break;
 			case "Escape":
+				e.preventDefault();
 				setIsOpen(false);
+				setActiveIndex(-1);
 				break;
 			case "Tab":
 				setIsOpen(false);
+				setActiveIndex(-1);
 				break;
 		}
 	};
@@ -183,9 +195,12 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 
 	return (
 		<div className="flex flex-col mb-[1.2rem] relative" ref={containerRef}>
-			<label className="text-[0.85rem] mb-[0.4rem] font-semibold text-text uppercase tracking-[0.05em]">{label}</label>
+			<label htmlFor={`${id}-input`} className="text-[0.85rem] mb-[0.4rem] font-semibold text-text uppercase tracking-[0.05em]">
+				{label}
+			</label>
 			<div className="relative">
 				<input
+					id={`${id}-input`}
 					type="text"
 					className="p-3 border border-border-color rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)] w-full"
 					placeholder={placeholder || "Search city, region or code..."}
@@ -202,13 +217,16 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 					aria-autocomplete="list"
 					aria-expanded={isOpen}
 					aria-haspopup="listbox"
+					aria-controls={`${id}-listbox`}
+					aria-activedescendant={activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined}
+					aria-label={label}
 				/>
 				<input type="hidden" id={id} name={id} value={selectedValue} required />
 
 				{isOpen && (
-					<div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border border-border-color rounded-lg max-h-[300px] overflow-y-auto overflow-x-hidden z-10 shadow-lg" ref={dropdownRef} role="listbox">
+					<div id={`${id}-listbox`} className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border border-border-color rounded-lg max-h-[300px] overflow-y-auto overflow-x-hidden z-10 shadow-lg" ref={dropdownRef} role="listbox" aria-label={`${label} options`}>
 						{filteredData.map((z, index) => (
-							<div key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-border-color-soft last:border-b-0 transition-all flex flex-col text-left bg-white outline-none hover:bg-light-blue hover:text-primary-black focus:bg-light-blue focus:text-primary-black ${index === activeIndex ? "bg-light-blue text-primary-black outline-2 outline-primary -outline-offset-2" : ""}`} role="option" aria-selected={index === activeIndex} onClick={() => handleSelect(z)}>
+							<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-border-color-soft last:border-b-0 transition-all flex flex-col text-left bg-white outline-none hover:bg-light-blue hover:text-primary-black focus:bg-light-blue focus:text-primary-black ${index === activeIndex ? "bg-light-blue text-primary-black outline-2 outline-primary -outline-offset-2" : ""}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
 								<div className="font-semibold text-[0.95rem]">
 									{z.city} <small className="font-normal text-text-muted ml-xs group-hover:text-primary-black/70 group-focus:text-primary-black/70">{z.region}</small>
 								</div>
@@ -217,7 +235,11 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 								</div>
 							</div>
 						))}
-						{filteredData.length === 0 && <div className="p-sm text-text-muted text-center italic">No timezones found</div>}
+						{filteredData.length === 0 && (
+							<div className="p-sm text-text-muted text-center italic" role="status">
+								No timezones found
+							</div>
+						)}
 					</div>
 				)}
 			</div>
