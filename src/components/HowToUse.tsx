@@ -36,7 +36,7 @@ export default function HowToUse() {
 	];
 
 	return (
-		<section className="mt-xxl p-xl bg-white/90 rounded-xl border border-border-color-soft">
+		<section className="mt-xxl p-xl bg-primary-white rounded-xl border border-border-color-soft shadow-xl shadow-primary-blue">
 			<h2 className="block text-center mb-xl border-none text-[1.8rem] font-extrabold">How to Use This Calculator</h2>
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-xl">
 				{steps.map((step, index) => (

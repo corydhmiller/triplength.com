@@ -83,7 +83,7 @@ export default function TripForm() {
 	return (
 		<>
 			<form id="trip-form" onSubmit={handleSubmit} aria-describedby="trip-form-description">
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-lg mb-lg">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-lg mb-xl">
 					<TripCard title="Departure" type="departure" data={departure} onChange={handleDepartureChange} />
 
 					<TripCard title="Arrival" type="arrival" data={arrival} onChange={handleArrivalChange} />
