@@ -1,86 +1,70 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { DateTime } from 'luxon';
-import { calculateTripDuration } from '../utils/duration';
-import TripCard from './TripCard';
-import DurationResult from './DurationResult';
-import SubmitButton from './SubmitButton';
+import React, { useState, useEffect } from "react";
+import { DateTime } from "luxon";
+import { calculateTripDuration } from "../utils/duration";
+import TripCard from "./TripCard";
+import DurationResult from "./DurationResult";
+import SubmitButton from "./SubmitButton";
 
 export default function TripForm() {
-  const [departure, setDeparture] = useState({
-    date: '',
-    time: '',
-    timezone: ''
-  });
-  
-  const [arrival, setArrival] = useState({
-    date: '',
-    time: '',
-    timezone: ''
-  });
+	const [departure, setDeparture] = useState({
+		date: "",
+		time: "",
+		timezone: "",
+	});
 
-  const [result, setResult] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+	const [arrival, setArrival] = useState({
+		date: "",
+		time: "",
+		timezone: "",
+	});
 
-  useEffect(() => {
-    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const now = DateTime.now();
-    
-    setDeparture({
-      date: now.toISODate() || '',
-      time: now.toFormat("HH:mm"),
-      timezone: zone
-    });
+	const [result, setResult] = useState<string | null>(null);
+	const [error, setError] = useState<string | null>(null);
 
-    setArrival({
-      date: now.toISODate() || '',
-      time: now.plus({ hours: 2 }).toFormat("HH:mm"),
-      timezone: zone
-    });
-  }, []);
+	useEffect(() => {
+		const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		const now = DateTime.now();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setResult(null);
+		setDeparture({
+			date: now.toISODate() || "",
+			time: now.toFormat("HH:mm"),
+			timezone: zone,
+		});
 
-    try {
-      const durationResult = calculateTripDuration(departure, arrival);
-      setResult(durationResult.formatted);
-      
-      // Smooth scroll to result
-      setTimeout(() => {
-        document.getElementById('result')?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } catch (err) {
-      setError("Invalid date or time selected.");
-    }
-  };
+		setArrival({
+			date: now.toISODate() || "",
+			time: now.plus({ hours: 2 }).toFormat("HH:mm"),
+			timezone: zone,
+		});
+	}, []);
 
-  return (
-    <>
-      <form id="trip-form" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-lg mb-lg">
-          <TripCard 
-            title="Departure" 
-            type="departure" 
-            data={departure} 
-            onChange={updates => setDeparture(prev => ({ ...prev, ...updates }))}
-          />
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		setError(null);
+		setResult(null);
 
-          <TripCard 
-            title="Arrival" 
-            type="arrival" 
-            data={arrival} 
-            onChange={updates => setArrival(prev => ({ ...prev, ...updates }))}
-          />
-        </div>
+		try {
+			const durationResult = calculateTripDuration(departure, arrival);
+			setResult(durationResult.formatted);
+		} catch (err) {
+			setError("Invalid date or time selected.");
+		}
+	};
 
-        <SubmitButton label="Calculate Duration" />
-      </form>
+	return (
+		<>
+			<form id="trip-form" onSubmit={handleSubmit}>
+				<DurationResult result={result} error={error} />
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-lg mb-lg">
+					<TripCard title="Departure" type="departure" data={departure} onChange={updates => setDeparture(prev => ({ ...prev, ...updates }))} />
 
-      <DurationResult result={result} error={error} />
-    </>
-  );
+					<TripCard title="Arrival" type="arrival" data={arrival} onChange={updates => setArrival(prev => ({ ...prev, ...updates }))} />
+				</div>
+
+				<SubmitButton label="Calculate Duration" />
+			</form>
+		</>
+	);
 }
