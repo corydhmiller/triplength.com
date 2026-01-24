@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { DateTime } from 'luxon';
-import TimezoneSelect from './TimezoneSelect';
 import { calculateTripDuration } from '../utils/duration';
+import TripCard from './TripCard';
+import DurationResult from './DurationResult';
+import SubmitButton from './SubmitButton';
 
 export default function TripForm() {
-  const [userZone, setUserZone] = useState('UTC');
-  
   const [departure, setDeparture] = useState({
     date: '',
     time: '',
@@ -25,39 +25,20 @@ export default function TripForm() {
 
   useEffect(() => {
     const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    setUserZone(zone);
-    
     const now = DateTime.now();
-    const defaultDepDate = now.toISODate() || '';
-    const defaultDepTime = now.toFormat("HH:mm");
-    const defaultArrDate = now.toISODate() || '';
-    const defaultArrTime = now.plus({ hours: 2 }).toFormat("HH:mm");
-
+    
     setDeparture({
-      date: defaultDepDate,
-      time: defaultDepTime,
+      date: now.toISODate() || '',
+      time: now.toFormat("HH:mm"),
       timezone: zone
     });
 
     setArrival({
-      date: defaultArrDate,
-      time: defaultArrTime,
+      date: now.toISODate() || '',
+      time: now.plus({ hours: 2 }).toFormat("HH:mm"),
       timezone: zone
     });
   }, []);
-
-  const handleSetNow = (type: 'departure' | 'arrival') => {
-    const now = DateTime.now();
-    const date = now.toISODate() || '';
-    const time = now.toFormat("HH:mm");
-    const timezone = now.zoneName;
-    
-    if (type === 'departure') {
-      setDeparture(prev => ({ ...prev, date, time, timezone }));
-    } else {
-      setArrival(prev => ({ ...prev, date, time, timezone }));
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,96 +62,25 @@ export default function TripForm() {
     <>
       <form id="trip-form" onSubmit={handleSubmit}>
         <div className="grid-container">
-          <section className="card">
-            <h2 className="text-[1.2rem] mt-0 mb-md text-text border-b-2 border-accent inline-block font-semibold">Departure</h2>
-            <div className="field">
-              <div className="label-row">
-                <label htmlFor="dep-date">Date</label>
-                <button 
-                  type="button" 
-                  className="btn-now"
-                  onClick={() => handleSetNow('departure')}
-                >
-                  Set to Now
-                </button>
-              </div>
-              <input 
-                type="date" 
-                id="dep-date" 
-                value={departure.date} 
-                onChange={e => setDeparture(prev => ({ ...prev, date: e.target.value }))}
-                required 
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="dep-time">Time</label>
-              <input 
-                type="time" 
-                id="dep-time" 
-                value={departure.time} 
-                onChange={e => setDeparture(prev => ({ ...prev, time: e.target.value }))}
-                required 
-              />
-            </div>
-            <TimezoneSelect 
-              label="Timezone" 
-              id="dep-zone" 
-              value={departure.timezone} 
-              placeholder="Departure city, region..." 
-              onChange={val => setDeparture(prev => ({ ...prev, timezone: val }))}
-            />
-          </section>
+          <TripCard 
+            title="Departure" 
+            type="departure" 
+            data={departure} 
+            onChange={updates => setDeparture(prev => ({ ...prev, ...updates }))}
+          />
 
-          <section className="card">
-            <h2 className="text-[1.2rem] mt-0 mb-md text-text border-b-2 border-accent inline-block font-semibold">Arrival</h2>
-            <div className="field">
-              <div className="label-row">
-                <label htmlFor="arr-date">Date</label>
-                <button 
-                  type="button" 
-                  className="btn-now"
-                  onClick={() => handleSetNow('arrival')}
-                >
-                  Set to Now
-                </button>
-              </div>
-              <input 
-                type="date" 
-                id="arr-date" 
-                value={arrival.date} 
-                onChange={e => setArrival(prev => ({ ...prev, date: e.target.value }))}
-                required 
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="arr-time">Time</label>
-              <input 
-                type="time" 
-                id="arr-time" 
-                value={arrival.time} 
-                onChange={e => setArrival(prev => ({ ...prev, time: e.target.value }))}
-                required 
-              />
-            </div>
-            <TimezoneSelect 
-              label="Timezone" 
-              id="arr-zone" 
-              value={arrival.timezone} 
-              placeholder="Arrival city, region..." 
-              onChange={val => setArrival(prev => ({ ...prev, timezone: val }))}
-            />
-          </section>
+          <TripCard 
+            title="Arrival" 
+            type="arrival" 
+            data={arrival} 
+            onChange={updates => setArrival(prev => ({ ...prev, ...updates }))}
+          />
         </div>
 
-        <button type="submit" className="btn-primary">Calculate Duration</button>
+        <SubmitButton label="Calculate Duration" />
       </form>
 
-      {(result || error) && (
-        <div id="result" className="result-container">
-          <h3 className="mt-0 text-[1.1rem] text-accent-dark uppercase tracking-widest">Total trip duration</h3>
-          <p id="duration-text" className="mt-xs text-[clamp(2rem,5vw,4rem)] font-extrabold text-primary-black">{result || error}</p>
-        </div>
-      )}
+      <DurationResult result={result} error={error} />
     </>
   );
 }
