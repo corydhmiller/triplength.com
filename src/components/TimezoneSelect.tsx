@@ -27,8 +27,6 @@ interface Props {
 	onChange?: (value: string) => void;
 }
 
-// PERFORMANCE FIX: Hoist expensive timezone data computation outside component
-// This runs once per module load instead of on every component mount
 let cachedTimezoneData: TimezoneItem[] | null = null;
 
 function getTimezoneData(): TimezoneItem[] {
@@ -84,17 +82,11 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const dropdownRef = useRef<HTMLDivElement>(null);
-	const searchInputRef = useRef<HTMLInputElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
 
-	// Get timezone data from cache
 	const timezoneData = getTimezoneData();
 
 	const filteredData = useMemo(() => {
-		if (!searchValue || (selectedValue && searchValue === timezoneData.find(z => z.id === selectedValue)?.city + ` (${timezoneData.find(z => z.id === selectedValue)?.abbr})`)) {
-			// If searchValue matches the selected label, don't filter (or show all if opened)
-			// But for better UX, let's just filter by what's typed
-		}
-
 		const filterLower = searchValue.toLowerCase();
 		return timezoneData
 			.filter(z => z.searchString.includes(filterLower))
@@ -121,14 +113,12 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 		}
 	}, [value]);
 
-	// PERFORMANCE FIX: Use mousedown instead of click and handle it properly
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
 				setIsOpen(false);
 			}
 		};
-		// Using mousedown instead of click for better UX (closes before click fires)
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
@@ -176,6 +166,7 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 				e.preventDefault();
 				setIsOpen(false);
 				setActiveIndex(-1);
+				inputRef.current?.focus();
 				break;
 			case "Tab":
 				setIsOpen(false);
@@ -200,6 +191,7 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 			</label>
 			<div className="relative">
 				<input
+					ref={inputRef}
 					id={`${id}-input`}
 					type="text"
 					className="p-3 border border-border-color rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)] w-full"
