@@ -36,7 +36,7 @@ export default function TripCard({ title, type, data, onChange }: TripCardProps)
 				{title}
 			</h2>
 
-			<FormField label="Date" id={`${prefix}-date`} rightElement={<NowButton onClick={handleSetNow} />}>
+			<FormField label="Date (DD.MM.YYY)" id={`${prefix}-date`} rightElement={<NowButton onClick={handleSetNow} />}>
 				<input type="date" id={`${prefix}-date`} value={data.date} onChange={e => onChange({ date: e.target.value })} required aria-label={`${title} date`} aria-required="true" className="p-3 border border-white-soft rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)]" />
 			</FormField>
 

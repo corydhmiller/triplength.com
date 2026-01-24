@@ -158,14 +158,6 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 				e.preventDefault();
 				setActiveIndex(prev => Math.max(prev - 1, 0));
 				break;
-			case "Home":
-				e.preventDefault();
-				setActiveIndex(0);
-				break;
-			case "End":
-				e.preventDefault();
-				setActiveIndex(filteredData.length - 1);
-				break;
 			case "Enter":
 				if (activeIndex >= 0 && filteredData[activeIndex]) {
 					e.preventDefault();
@@ -237,7 +229,7 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 						{filteredData.map((z, index) => {
 							const isActive = index === activeIndex;
 							return (
-								<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-border-white-soft last:border-b-0 transition-all flex flex-col text-left outline-none ${isActive ? "bg-light-blue text-primary-black" : "bg-white hover:bg-light-blue hover:text-primary-black"}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
+								<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-white-soft last:border-b-0 transition-all flex flex-col text-left outline-none ${isActive ? "bg-light-blue text-primary-black" : "bg-white hover:bg-light-blue hover:text-primary-black"}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
 									<div className="font-semibold text-[0.95rem]">
 										{z.city} <small className={`font-normal ml-xs ${isActive ? "text-primary-black/70" : "text-muted group-hover:text-primary-black/70"}`}>{z.region}</small>
 									</div>
