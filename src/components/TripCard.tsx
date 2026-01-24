@@ -32,7 +32,7 @@ export default function TripCard({ title, type, data, onChange }: TripCardProps)
   };
 
   return (
-    <section className="card">
+    <section className="p-md bg-primary-white border border-border-color rounded-lg shadow-sm">
       <h2 className="text-[1.2rem] mt-0 mb-md text-text border-b-2 border-accent inline-block font-semibold">
         {title}
       </h2>
@@ -48,6 +48,7 @@ export default function TripCard({ title, type, data, onChange }: TripCardProps)
           value={data.date} 
           onChange={e => onChange({ date: e.target.value })}
           required 
+          className="p-3 border border-border-color rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)]"
         />
       </FormField>
 
@@ -58,6 +59,7 @@ export default function TripCard({ title, type, data, onChange }: TripCardProps)
           value={data.time} 
           onChange={e => onChange({ time: e.target.value })}
           required 
+          className="p-3 border border-border-color rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)]"
         />
       </FormField>
 

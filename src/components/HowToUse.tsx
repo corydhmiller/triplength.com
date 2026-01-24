@@ -11,7 +11,9 @@ interface StepItemProps {
 export function StepItem({ number, title, description }: StepItemProps) {
   return (
     <div className="flex gap-md">
-      <div className="step-number-circle">{number}</div>
+      <div className="shrink-0 w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-extrabold text-[1.25rem] shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+        {number}
+      </div>
       <div className="step-content">
         <h3 className="text-[1.1rem] mb-2 text-text font-semibold">{title}</h3>
         <p className="text-[0.95rem] text-text-muted leading-relaxed">
@@ -39,7 +41,7 @@ export default function HowToUse() {
   ];
 
   return (
-    <section className="how-to-use-section">
+    <section className="mt-xxl p-xl bg-white/90 rounded-xl border border-border-color-soft">
       <h2 className="block text-center mb-xl border-none text-[1.8rem] font-extrabold">How to Use This Calculator</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-xl">
         {steps.map((step, index) => (

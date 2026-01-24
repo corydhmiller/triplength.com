@@ -166,12 +166,12 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
   }, [activeIndex]);
 
   return (
-    <div className="field timezone-field" ref={containerRef}>
-      <label>{label}</label>
-      <div className="searchable-select">
+    <div className="flex flex-col mb-[1.2rem] relative" ref={containerRef}>
+      <label className="text-[0.85rem] mb-[0.4rem] font-semibold text-text uppercase tracking-[0.05em]">{label}</label>
+      <div className="relative">
         <input
           type="text"
-          className="tz-search"
+          className="p-3 border border-border-color rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)] w-full"
           placeholder={placeholder || "Search city, region or code..."}
           autoComplete="off"
           value={searchValue}
@@ -190,25 +190,25 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
         <input type="hidden" id={id} name={id} value={selectedValue} required />
         
         {isOpen && (
-          <div className="tz-dropdown" ref={dropdownRef} role="listbox">
+          <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border border-border-color rounded-lg max-h-[300px] overflow-y-auto overflow-x-hidden z-10 shadow-lg" ref={dropdownRef} role="listbox">
             {filteredData.map((z, index) => (
               <div
                 key={`${z.id}-${z.city}-${index}`}
-                className={`tz-item ${index === activeIndex ? 'active' : ''}`}
+                className={`group p-sm cursor-pointer border-b border-border-color-soft last:border-b-0 transition-all flex flex-col text-left bg-white outline-none hover:bg-light-blue hover:text-primary-black focus:bg-light-blue focus:text-primary-black ${index === activeIndex ? 'bg-light-blue text-primary-black outline-2 outline-primary -outline-offset-2' : ''}`}
                 role="option"
                 aria-selected={index === activeIndex}
                 onClick={() => handleSelect(z)}
               >
-                <div className="tz-item-main">
-                  {z.city} <small>{z.region}</small>
+                <div className="font-semibold text-[0.95rem]">
+                  {z.city} <small className="font-normal text-text-muted ml-xs group-hover:text-primary-black/70 group-focus:text-primary-black/70">{z.region}</small>
                 </div>
-                <div className="tz-item-meta">
+                <div className="text-[0.75rem] text-text-muted mt-[0.2rem] group-hover:text-primary-black/70 group-focus:text-primary-black/70">
                   {z.abbr} — {z.id}
                 </div>
               </div>
             ))}
             {filteredData.length === 0 && (
-              <div className="tz-no-results">No timezones found</div>
+              <div className="p-sm text-text-muted text-center italic">No timezones found</div>
             )}
           </div>
         )}

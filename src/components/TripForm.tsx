@@ -61,7 +61,7 @@ export default function TripForm() {
   return (
     <>
       <form id="trip-form" onSubmit={handleSubmit}>
-        <div className="grid-container">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-lg mb-lg">
           <TripCard 
             title="Departure" 
             type="departure" 
