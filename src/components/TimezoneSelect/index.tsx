@@ -211,7 +211,7 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 					ref={inputRef}
 					id={`${id}-input`}
 					type="text"
-					className="p-3 border border-border-color rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)] w-full"
+					className="p-3 border border-white-soft rounded-md text-[1rem] text-text bg-white transition-all focus:outline-none focus:border-primary focus:shadow-[0_0_0_3px_var(--color-primary-soft)] w-full"
 					placeholder={placeholder || "Search city, region or code..."}
 					autoComplete="off"
 					value={searchValue}
@@ -233,22 +233,22 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 				<input type="hidden" id={id} name={id} value={selectedValue} required />
 
 				{isOpen && (
-					<div id={`${id}-listbox`} className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border border-border-color rounded-lg max-h-[300px] overflow-y-auto overflow-x-hidden z-10 shadow-lg" ref={dropdownRef} role="listbox" aria-label={`${label} options`}>
+					<div id={`${id}-listbox`} className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border border-white-soft rounded-lg max-h-[300px] overflow-y-auto overflow-x-hidden z-10 shadow-lg" ref={dropdownRef} role="listbox" aria-label={`${label} options`}>
 						{filteredData.map((z, index) => {
 							const isActive = index === activeIndex;
 							return (
-								<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-border-color-soft last:border-b-0 transition-all flex flex-col text-left outline-none ${isActive ? "bg-light-blue text-primary-black" : "bg-white hover:bg-light-blue hover:text-primary-black"}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
+								<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-border-white-soft last:border-b-0 transition-all flex flex-col text-left outline-none ${isActive ? "bg-light-blue text-primary-black" : "bg-white hover:bg-light-blue hover:text-primary-black"}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
 									<div className="font-semibold text-[0.95rem]">
-										{z.city} <small className={`font-normal ml-xs ${isActive ? "text-primary-black/70" : "text-text-muted group-hover:text-primary-black/70"}`}>{z.region}</small>
+										{z.city} <small className={`font-normal ml-xs ${isActive ? "text-primary-black/70" : "text-muted group-hover:text-primary-black/70"}`}>{z.region}</small>
 									</div>
-									<div className={`text-[0.75rem] mt-[0.2rem] ${isActive ? "text-primary-black/70" : "text-text-muted group-hover:text-primary-black/70"}`}>
+									<div className={`text-[0.75rem] mt-[0.2rem] ${isActive ? "text-primary-black/70" : "text-muted group-hover:text-primary-black/70"}`}>
 										{z.abbr} — {z.id}
 									</div>
 								</div>
 							);
 						})}
 						{filteredData.length === 0 && (
-							<div className="p-sm text-text-muted text-center italic" role="status">
+							<div className="p-sm text-muted text-center italic" role="status">
 								No timezones found
 							</div>
 						)}

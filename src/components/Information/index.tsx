@@ -10,13 +10,13 @@ export function StepItem({ number, title, description }: StepItemProps) {
 			<div className="shrink-0 w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-extrabold text-[1.25rem] shadow-[0_4px_8px_rgba(0,0,0,0.1)]">{number}</div>
 			<div className="step-content">
 				<h3 className="text-[1.1rem] mb-2 text-text font-semibold">{title}</h3>
-				<p className="text-[0.95rem] text-text-muted leading-relaxed">{description}</p>
+				<p className="text-[0.95rem] text-muted text-muted leading-relaxed">{description}</p>
 			</div>
 		</div>
 	);
 }
 
-export default function HowToUse() {
+export default function Information() {
 	const steps = [
 		{
 			id: "departure",
@@ -36,7 +36,7 @@ export default function HowToUse() {
 	];
 
 	return (
-		<section className="mt-xxl p-xl bg-primary-white rounded-xl border border-border-color-soft shadow-xl shadow-primary-blue">
+		<section className="mt-xxl p-xl bg-primary-white rounded-xl border border-border-white-soft shadow-xl shadow-primary-blue">
 			<details>
 				<summary>
 					<span className="cursor-pointer">How to use this calculator</span>

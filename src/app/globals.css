@@ -3,6 +3,7 @@
 @theme {
 	/* Theme variables using OKLCH */
 	--color-primary-white: oklch(99.44% 0 0);
+	--color-white-soft: oklch(90% 0 0);
 	--color-primary-black: oklch(10.92% 0 0);
 	--color-light-blue: oklch(79.05% 0.103 234.34);
 	--color-primary-blue: oklch(70.15% 0.147 236.42);
@@ -11,13 +12,10 @@
 
 	--color-bg: var(--color-light-blue);
 	--color-text: var(--color-primary-black);
-	--color-text-muted: oklch(45% 0 0);
+	--color-muted: oklch(45% 0 0);
 	--color-primary: var(--color-primary-blue);
 	--color-primary-soft: oklch(from var(--color-primary-blue) l c h / 0.1);
 	--color-accent-dark: oklch(from var(--color-accent) 0.3 0.1 h);
-
-	--color-border-color: oklch(90% 0 0);
-	--color-border-color-soft: oklch(95% 0 0);
 
 	--radius-sm: 6px;
 	--radius-md: 8px;
