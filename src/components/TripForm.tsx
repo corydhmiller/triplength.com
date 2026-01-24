@@ -46,6 +46,19 @@ export default function TripForm() {
     });
   }, []);
 
+  const handleSetNow = (type: 'departure' | 'arrival') => {
+    const now = DateTime.now();
+    const date = now.toISODate() || '';
+    const time = now.toFormat("HH:mm");
+    const timezone = now.zoneName;
+    
+    if (type === 'departure') {
+      setDeparture(prev => ({ ...prev, date, time, timezone }));
+    } else {
+      setArrival(prev => ({ ...prev, date, time, timezone }));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -71,7 +84,16 @@ export default function TripForm() {
           <section className="card">
             <h2 className="text-[1.2rem] mt-0 mb-md text-text border-b-2 border-accent inline-block font-semibold">Departure</h2>
             <div className="field">
-              <label htmlFor="dep-date">Date</label>
+              <div className="label-row">
+                <label htmlFor="dep-date">Date</label>
+                <button 
+                  type="button" 
+                  className="btn-now"
+                  onClick={() => handleSetNow('departure')}
+                >
+                  Set to Now
+                </button>
+              </div>
               <input 
                 type="date" 
                 id="dep-date" 
@@ -93,7 +115,7 @@ export default function TripForm() {
             <TimezoneSelect 
               label="Timezone" 
               id="dep-zone" 
-              initialValue={userZone} 
+              value={departure.timezone} 
               placeholder="Departure city, region..." 
               onChange={val => setDeparture(prev => ({ ...prev, timezone: val }))}
             />
@@ -102,7 +124,16 @@ export default function TripForm() {
           <section className="card">
             <h2 className="text-[1.2rem] mt-0 mb-md text-text border-b-2 border-accent inline-block font-semibold">Arrival</h2>
             <div className="field">
-              <label htmlFor="arr-date">Date</label>
+              <div className="label-row">
+                <label htmlFor="arr-date">Date</label>
+                <button 
+                  type="button" 
+                  className="btn-now"
+                  onClick={() => handleSetNow('arrival')}
+                >
+                  Set to Now
+                </button>
+              </div>
               <input 
                 type="date" 
                 id="arr-date" 
@@ -124,7 +155,7 @@ export default function TripForm() {
             <TimezoneSelect 
               label="Timezone" 
               id="arr-zone" 
-              initialValue={userZone} 
+              value={arrival.timezone} 
               placeholder="Arrival city, region..." 
               onChange={val => setArrival(prev => ({ ...prev, timezone: val }))}
             />

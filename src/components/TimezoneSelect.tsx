@@ -23,15 +23,15 @@ interface Props {
   label: string;
   id: string;
   placeholder?: string;
-  initialValue?: string;
+  value?: string;
   onChange?: (value: string) => void;
 }
 
-export default function TimezoneSelect({ label, id, placeholder, initialValue, onChange }: Props) {
+export default function TimezoneSelect({ label, id, placeholder, value, onChange }: Props) {
   const [searchValue, setSearchValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [selectedValue, setSelectedValue] = useState(initialValue || '');
+  const [selectedValue, setSelectedValue] = useState(value || '');
   
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -95,13 +95,17 @@ export default function TimezoneSelect({ label, id, placeholder, initialValue, o
   }, [searchValue, timezoneData, selectedValue]);
 
   useEffect(() => {
-    if (initialValue) {
-      const initialZone = timezoneData.find(z => z.id === initialValue);
-      if (initialZone) {
-        setSearchValue(`${initialZone.city} (${initialZone.abbr})`);
+    if (value) {
+      setSelectedValue(value);
+      const zone = timezoneData.find(z => z.id === value);
+      if (zone) {
+        setSearchValue(`${zone.city} (${zone.abbr})`);
       }
+    } else {
+      setSelectedValue('');
+      setSearchValue('');
     }
-  }, [initialValue, timezoneData]);
+  }, [value, timezoneData]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
