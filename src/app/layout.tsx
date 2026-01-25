@@ -9,19 +9,23 @@ const rubik = Rubik({
 });
 
 export const metadata: Metadata = {
-	title: "How long will my trip be?",
-	description: "Calculate travel duration between two cities in different timezones with automatic DST handling.",
+	title: "TripLength - How long will my trip be?",
+	description: "Easily calculate travel duration between locations with automatic timezone handling.",
+	robots: {
+		index: true,
+		follow: true,
+	},
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	const year = new Date().getFullYear();
 
 	return (
-		<html lang="en" className={rubik.variable}>
-			<body>
+		<html lang="en">
+			<body className={rubik.variable}>
 				{children}
 				<footer className="w-full text-center p-xl px-6 text-primary-black text-[0.9rem] font-medium mt-auto">
-					<p>HLWMTB @ {year}</p>
+					<p>TripLength @ {year}</p>
 				</footer>
 			</body>
 		</html>

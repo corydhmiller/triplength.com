@@ -92,6 +92,244 @@ describe('calculateTripDuration', () => {
       timezone: 'America/New_York'
     };
     const result = calculateTripDuration(departure, arrival);
-    expect(result.formatted).toBe('Arrival cannot be before departure');
+    expect(result.formatted).toBe('Whoops! Arrival cannot be before departure.');
+    expect(result.hours).toBe(0);
+    expect(result.minutes).toBe(0);
+    expect(result.totalMinutes).toBe(0);
+  });
+
+  test('handles arrival before departure across different dates', () => {
+    const departure = {
+      date: '2026-06-02',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '20:00',
+      timezone: 'America/New_York'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.formatted).toBe('Whoops! Arrival cannot be before departure.');
+  });
+
+  test('calculates duration across multiple days', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-03',
+      time: '14:00',
+      timezone: 'America/New_York'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.hours).toBe(52);
+    expect(result.minutes).toBe(0);
+    expect(result.totalMinutes).toBe(3120);
+  });
+
+  test('handles zero duration', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.hours).toBe(0);
+    expect(result.minutes).toBe(0);
+    expect(result.formatted).toBe('0 minutes');
+  });
+
+  test('formats singular hour correctly', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '11:00',
+      timezone: 'America/New_York'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.formatted).toBe('1 hour');
+  });
+
+  test('formats singular minute correctly', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '10:01',
+      timezone: 'America/New_York'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.formatted).toBe('1 minute');
+  });
+
+  test('formats only hours when minutes are zero', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '13:00',
+      timezone: 'America/New_York'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.formatted).toBe('3 hours');
+    expect(result.minutes).toBe(0);
+  });
+
+  test('formats only minutes when hours are zero', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '10:45',
+      timezone: 'America/New_York'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.formatted).toBe('45 minutes');
+    expect(result.hours).toBe(0);
+  });
+
+  test('throws error for invalid departure date', () => {
+    const departure = {
+      date: 'invalid-date',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '14:00',
+      timezone: 'America/New_York'
+    };
+    expect(() => calculateTripDuration(departure, arrival)).toThrow('Invalid departure or arrival date/time');
+  });
+
+  test('throws error for invalid arrival date', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: 'invalid-date',
+      time: '14:00',
+      timezone: 'America/New_York'
+    };
+    expect(() => calculateTripDuration(departure, arrival)).toThrow('Invalid departure or arrival date/time');
+  });
+
+  test('throws error for invalid departure time', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '25:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '14:00',
+      timezone: 'America/New_York'
+    };
+    expect(() => calculateTripDuration(departure, arrival)).toThrow('Invalid departure or arrival date/time');
+  });
+
+  test('throws error for invalid arrival time', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '25:00',
+      timezone: 'America/New_York'
+    };
+    expect(() => calculateTripDuration(departure, arrival)).toThrow('Invalid departure or arrival date/time');
+  });
+
+  test('calculates duration across International Date Line', () => {
+    // Tokyo to Los Angeles crossing the date line
+    // Tokyo is ahead, so arriving on May 31 when departing June 1 means going back in time
+    // This should result in a negative duration, which gets handled as an error
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'Asia/Tokyo'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '18:00',
+      timezone: 'America/Los_Angeles'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    // Should handle the timezone difference correctly (not date line in this case)
+    expect(result.totalMinutes).toBeGreaterThan(0);
+  });
+
+  test('calculates duration with different timezone formats', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'UTC'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '15:00',
+      timezone: 'UTC'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.hours).toBe(5);
+    expect(result.minutes).toBe(0);
+  });
+
+  test('handles very long trips (multiple days)', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-10',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.hours).toBe(216); // 9 days * 24 hours
+    expect(result.totalMinutes).toBe(12960);
+  });
+
+  test('calculates totalMinutes correctly', () => {
+    const departure = {
+      date: '2026-06-01',
+      time: '10:00',
+      timezone: 'America/New_York'
+    };
+    const arrival = {
+      date: '2026-06-01',
+      time: '12:30',
+      timezone: 'America/New_York'
+    };
+    const result = calculateTripDuration(departure, arrival);
+    expect(result.totalMinutes).toBe(150); // 2 hours 30 minutes = 150 minutes
+    expect(result.hours).toBe(2);
+    expect(result.minutes).toBe(30);
   });
 });
