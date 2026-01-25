@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { Rubik } from "next/font/google";
 import "./globals.css";
 
-// const rubik = Rubik({
-// 	subsets: ["latin"],
-// 	variable: "--font-rubik",
-// 	display: "swap",
-// });
+const rubik = Rubik({
+	subsets: ["latin"],
+	variable: "--font-rubik",
+	display: "swap",
+});
 
 export const metadata: Metadata = {
 	title: "TripLength - How long will my trip be?",
@@ -22,9 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 	return (
 		<html lang="en">
-			<body 
-			// className={rubik.variable}
-			>
+			<body className={rubik.variable}>
 				{children}
 				<footer className="w-full text-center p-xl px-6 text-primary-black text-[0.9rem] font-medium mt-auto">
 					<p>TripLength @ {year}</p>

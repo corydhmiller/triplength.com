@@ -5,29 +5,7 @@ import { DateTime } from "luxon";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSavedTimezones } from "@hooks/useSavedTimezones";
 import SavedTimezones from "@components/SavedTimezones";
-
-interface TimezoneItem {
-	id: string;
-	region: string;
-	city: string;
-	abbr: string;
-	searchString: string;
-}
-
-interface CityMappingItem {
-	city: string;
-	timezone: string;
-	province?: string;
-	country: string;
-}
-
-interface Props {
-	label: string;
-	id: string;
-	placeholder?: string;
-	value?: string;
-	onChange?: (value: string) => void;
-}
+import { TimezoneItem, CityMappingItem, TimezoneSelectProps } from "./timezoneselect.types";
 
 let cachedTimezoneData: TimezoneItem[] | null = null;
 
@@ -76,7 +54,7 @@ function getTimezoneData(): TimezoneItem[] {
 	return deduplicated;
 }
 
-export default function TimezoneSelect({ label, id, placeholder, value, onChange }: Props) {
+export default function TimezoneSelect({ label, id, placeholder, value, onChange }: TimezoneSelectProps) {
 	const [searchValue, setSearchValue] = useState("");
 	const [isOpen, setIsOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(-1);
@@ -212,7 +190,10 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 						setIsOpen(true);
 						setActiveIndex(-1);
 					}}
-					onFocus={() => setIsOpen(true)}
+					onFocus={() => {
+						setSearchValue("");
+						setIsOpen(true);
+					}}
 					onKeyDown={handleKeyDown}
 					role="combobox"
 					aria-autocomplete="list"
@@ -229,7 +210,7 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 						{filteredData.map((z, index) => {
 							const isActive = index === activeIndex;
 							return (
-								<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-white-soft last:border-b-0 transition-all flex flex-col text-left outline-none ${isActive ? "bg-light-blue text-primary-black" : "bg-white hover:bg-light-blue hover:text-primary-black"}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
+								<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-white-soft last:border-b-0 transition-all flex flex-col text-left outline-none ${isActive ? "bg-light-blue/50 text-primary-black" : "bg-white hover:bg-light-blue/50"}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
 									<div className="font-semibold text-[0.95rem]">
 										{z.city} <small className={`font-normal ml-xs ${isActive ? "text-primary-black/70" : "text-muted group-hover:text-primary-black/70"}`}>{z.region}</small>
 									</div>
