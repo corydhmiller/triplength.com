@@ -1,47 +1,111 @@
-# Trip Time Calculator
+# TripLength - Trip Duration Calculator
 
-A modern trip duration calculator built with Next.js 16, React 19, and Tailwind CSS 4.
+A modern, user-friendly web application for calculating travel duration between any two locations. Perfect for planning trips, flights, or any journey where you need to know exactly how long you'll be in transit, accounting for timezone differences and Daylight Saving Time (DST) automatically.
 
-## 🚀 Features
+## ✨ Features
 
-- **Accurate Duration Calculation**: Handles timezone differences and Daylight Saving Time (DST) automatically using Luxon.
-- **Modern UI**: Built with a responsive, high-performance interface using Tailwind CSS 4 and OKLCH colors.
-- **Next.js 16**: Utilizing the latest App Router and Turbopack for lightning-fast development.
-- **Type-Safe**: Written entirely in TypeScript.
+- **Accurate Duration Calculation**: Automatically handles timezone differences and Daylight Saving Time (DST) transitions using Luxon
+- **City & Timezone Search**: Search for cities or select timezones directly with an intuitive autocomplete interface
+- **Saved Timezones**: Save up to 5 frequently used timezones for quick access (stored in browser localStorage)
+- **Smart Defaults**: Automatically pre-fills departure and arrival times with your current timezone
+- **Modern UI**: Responsive, high-performance interface built with Tailwind CSS 4 and OKLCH color space
+- **Type-Safe**: Fully written in TypeScript for reliability and developer experience
+- **Fast Development**: Powered by Next.js 16 App Router and Turbopack for lightning-fast hot reload
 
-## 🛠️ Getting Started
+## 🛠️ Tech Stack
 
-First, install the dependencies:
+- **Framework**: Next.js 16 (App Router)
+- **UI Library**: React 19
+- **Styling**: Tailwind CSS 4 with OKLCH colors
+- **Date/Time**: Luxon for timezone and DST handling
+- **City Data**: city-timezones for location-based timezone lookup
+- **Testing**: Jest with React Testing Library
+- **Language**: TypeScript
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Yarn (recommended) or npm
+
+### Installation
+
+Clone the repository and install dependencies:
 
 ```bash
+yarn install
+# or
 npm install
 ```
 
-Then, run the development server:
+### Development
+
+Start the development server:
 
 ```bash
+yarn dev
+# or
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-## 📁 Project Structure
+### Build for Production
 
-```text
-/
-├── public/          # Static assets
-├── src/
-│   ├── app/         # Next.js App Router (Layouts & Pages)
-│   ├── components/  # React components
-│   ├── utils/       # Utility functions (Duration logic)
-├── tests/           # Jest tests
-└── package.json
+```bash
+yarn build
+# or
+npm run build
+```
+
+### Start Production Server
+
+```bash
+yarn start
+# or
+npm start
+```
+
+### Linting
+
+```bash
+yarn lint
+# or
+npm run lint
 ```
 
 ## 🧪 Testing
 
-Run the test suite with Jest:
+Run the test suite:
 
 ```bash
+yarn test
+# or
 npm test
 ```
+
+The project includes comprehensive tests for:
+
+- Duration calculation logic
+- React components
+- Custom hooks
+- Form validation
+
+## 🎯 How It Works
+
+1. **Enter Departure Details**: Select the date, time, and timezone/city for your departure
+2. **Enter Arrival Details**: Select the date, time, and timezone/city for your arrival
+3. **Calculate**: Click the button to instantly see the exact duration of your trip
+4. **Save Timezones**: Frequently used timezones can be saved for quick access (up to 5)
+
+The calculator automatically handles:
+
+- Timezone conversions
+- Daylight Saving Time transitions
+- Date boundaries (trips spanning multiple days)
+- Invalid date/time combinations
+
+## 📝 License
+
+This project is licensed under the MIT License.
