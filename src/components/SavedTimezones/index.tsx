@@ -5,16 +5,27 @@ import { SavedTimezone } from "@hooks/useSavedTimezones";
 interface SavedTimezonesProps {
 	timezones: SavedTimezone[];
 	onSelect: (timezone: SavedTimezone) => void;
+	onClearAll: () => void;
 }
 
-export default function SavedTimezones({ timezones, onSelect }: SavedTimezonesProps) {
+export default function SavedTimezones({ timezones, onSelect, onClearAll }: SavedTimezonesProps) {
 	if (timezones.length === 0) {
 		return null;
 	}
 
 	return (
 		<div className="mt-sm">
-			<p className="text-[0.75rem] text-muted mb-xs font-medium uppercase tracking-wide">Recent</p>
+			<div className="flex items-center justify-between mb-xs">
+				<p className="text-[0.75rem] text-muted font-medium uppercase tracking-wide">Recent</p>
+				<button
+					type="button"
+					onClick={onClearAll}
+					className="text-[0.7rem] text-muted hover:text-primary-blue transition-colors"
+					title="Clear all recent timezones"
+				>
+					Clear all
+				</button>
+			</div>
 			<div className="flex flex-wrap gap-xs">
 				{timezones.map(tz => (
 					<button

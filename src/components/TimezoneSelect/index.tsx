@@ -65,7 +65,7 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const timezoneData = getTimezoneData();
-	const { savedTimezones, saveTimezone } = useSavedTimezones();
+	const { savedTimezones, saveTimezone, clearAllTimezones } = useSavedTimezones();
 
 	const filteredData = useMemo(() => {
 		const filterLower = searchValue.toLowerCase();
@@ -104,18 +104,20 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
-	const handleSelect = (z: TimezoneItem) => {
+	const handleSelect = (z: TimezoneItem, shouldSave = true) => {
 		setSelectedValue(z.id);
 		setSearchValue(`${z.city} (${z.abbr})`);
 		setIsOpen(false);
 		onChange?.(z.id);
 
-		// Save to recent timezones
-		saveTimezone({
-			id: z.id,
-			city: z.city,
-			abbr: z.abbr,
-		});
+		// Save to recent timezones only if not selecting from Recent list
+		if (shouldSave) {
+			saveTimezone({
+				id: z.id,
+				city: z.city,
+				abbr: z.abbr,
+			});
+		}
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -167,7 +169,8 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 	const handleSavedTimezoneSelect = (tz: { id: string; city: string; abbr: string }) => {
 		const zone = timezoneData.find(z => z.id === tz.id);
 		if (zone) {
-			handleSelect(zone);
+			// Don't re-save when selecting from Recent list (pass false)
+			handleSelect(zone, false);
 		}
 	};
 
@@ -229,7 +232,7 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 				)}
 			</div>
 
-			<SavedTimezones timezones={savedTimezones} onSelect={handleSavedTimezoneSelect} />
+			<SavedTimezones timezones={savedTimezones} onSelect={handleSavedTimezoneSelect} onClearAll={clearAllTimezones} />
 		</div>
 	);
 }
