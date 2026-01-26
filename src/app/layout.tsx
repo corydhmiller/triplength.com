@@ -9,6 +9,7 @@ const rubik = Rubik({
 });
 
 export const metadata: Metadata = {
+	metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://triplength.com'),
 	title: "Travel Time Calculator - Calculate Trip Duration Between Cities | TripLength",
 	description: "Free travel time calculator with automatic timezone conversion. Calculate exact travel duration between any cities worldwide. Handles time zones, DST, and air travel time automatically. Perfect for flights and international trips.",
 	keywords: [
