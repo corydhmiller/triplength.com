@@ -51,7 +51,7 @@ describe('DurationResult', () => {
     render(<DurationResult result="1 hour" error={null} />);
     
     const resultText = screen.getByText('1 hour');
-    expect(resultText).toHaveClass('text-primary-black');
+    expect(resultText).toHaveClass('text-black');
   });
 
   test('has correct id for duration text', () => {

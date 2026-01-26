@@ -213,11 +213,11 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 						{filteredData.map((z, index) => {
 							const isActive = index === activeIndex;
 							return (
-								<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-white-soft last:border-b-0 transition-all flex flex-col text-left outline-none ${isActive ? "bg-light-blue/50 text-primary-black" : "bg-white hover:bg-light-blue/50"}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
+								<div id={`${id}-option-${index}`} key={`${z.id}-${z.city}-${index}`} className={`group p-sm cursor-pointer border-b border-white-soft last:border-b-0 transition-all flex flex-col text-left outline-none ${isActive ? "bg-light-blue/50 text-black" : "bg-white hover:bg-light-blue/50"}`} role="option" aria-selected={selectedValue === z.id} onClick={() => handleSelect(z)}>
 									<div className="font-semibold text-[0.95rem]">
-										{z.city} <small className={`font-normal ml-xs ${isActive ? "text-primary-black/70" : "text-muted group-hover:text-primary-black/70"}`}>{z.region}</small>
+										{z.city} <small className={`font-normal ml-xs ${isActive ? "text-black/70" : "text-muted group-hover:text-black/70"}`}>{z.region}</small>
 									</div>
-									<div className={`text-[0.75rem] mt-[0.2rem] ${isActive ? "text-primary-black/70" : "text-muted group-hover:text-primary-black/70"}`}>
+									<div className={`text-[0.75rem] mt-[0.2rem] ${isActive ? "text-black/70" : "text-muted group-hover:text-black/70"}`}>
 										{z.abbr} — {z.id}
 									</div>
 								</div>

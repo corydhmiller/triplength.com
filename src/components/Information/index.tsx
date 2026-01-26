@@ -36,7 +36,7 @@ export default function Information() {
 	];
 
 	return (
-		<section className="mt-xxl p-xl bg-primary-white rounded-xl border border-white-soft shadow-xl shadow-primary-blue">
+		<section className="mt-xxl p-xl bg-white rounded-xl border border-white-soft shadow-xl shadow-primary-blue">
 			<details>
 				<summary>
 					<span className="cursor-pointer">How to use this calculator</span>

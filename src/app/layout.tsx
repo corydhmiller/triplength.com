@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		<html lang="en">
 			<body className={rubik.variable}>
 				{children}
-				<footer className="w-full text-center p-xl px-6 text-primary-black text-[0.9rem] font-medium mt-auto">
+				<footer className="w-full text-center p-xl px-6 text-black text-[0.9rem] font-medium mt-auto">
 					<p>TripLength @ {year}</p>
 				</footer>
 			</body>
