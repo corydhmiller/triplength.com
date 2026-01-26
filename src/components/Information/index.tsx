@@ -7,7 +7,7 @@ interface StepItemProps {
 export function StepItem({ number, title, description }: StepItemProps) {
 	return (
 		<div className="flex gap-md">
-			<div className="shrink-0 w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-extrabold text-[1.25rem] shadow-[0_4px_8px_rgba(0,0,0,0.1)]">{number}</div>
+			<div className="shrink-0 w-10 h-10 bg-primary-blue text-white rounded-full flex items-center justify-center font-extrabold text-[1.25rem]">{number}</div>
 			<div className="step-content">
 				<h3 className="text-[1.1rem] mb-2 text-text font-semibold">{title}</h3>
 				<p className="text-[0.95rem] text-muted leading-relaxed">{description}</p>

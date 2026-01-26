@@ -1,0 +1,6 @@
+# TripLength Robots.txt
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://triplength.com/sitemap.xml
