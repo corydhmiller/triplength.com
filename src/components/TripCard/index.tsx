@@ -31,7 +31,7 @@ export default function TripCard({ title, type, data, onChange }: TripCardProps)
 	};
 
 	return (
-		<section className="p-md bg-primary-white border border-white-soft rounded-lg shadow-xl shadow-primary-blue" aria-labelledby={`${prefix}-heading`}>
+		<section className="p-md bg-white border border-white-soft rounded-lg shadow-xl shadow-primary-blue" aria-labelledby={`${prefix}-heading`}>
 			<h2 id={`${prefix}-heading`} className="text-[1.2rem] mt-0 mb-md text-text border-b-2 border-accent inline-block font-semibold">
 				{title}
 			</h2>

@@ -2,20 +2,18 @@
 
 @theme {
 	/* Theme variables using OKLCH */
-	--color-primary-white: oklch(99.44% 0 0);
+	--color-white: oklch(99.44% 0 0);
 	--color-white-soft: oklch(90% 0 0);
-	--color-primary-black: oklch(10.92% 0 0);
-	--color-light-blue: oklch(80.05% 0.093 234.34);
-	--color-primary-blue: oklch(70.15% 0.147 236.42);
-	--color-primary-blue-dark: oklch(60.15% 0.147 236.42);
-	--color-accent: oklch(0.4116 0.0554 305.53);
+	--color-black: oklch(10.92% 0 0);
+	--color-light-blue: oklch(0.8618 0.0518 221.58);
+	--color-primary-blue: oklch(0.7823 0.0809 222.99);
+	--color-primary-blue-dark: oklch(0.5877 0.0979 226.2);
+	--color-accent: oklch(0.7788 0.0758 34.27);
 
 	--color-bg: var(--color-light-blue);
-	--color-text: var(--color-primary-black);
 	--color-muted: oklch(45% 0 0);
-	--color-primary: var(--color-primary-blue);
 	--color-primary-soft: oklch(from var(--color-primary-blue) l c h / 0.1);
-	--color-accent-dark: oklch(from var(--color-accent) 0.3 0.1 h);
+
 
 	--radius-sm: 6px;
 	--radius-md: 8px;
@@ -44,7 +42,7 @@
 	body {
 		min-height: 100vh;
 		background-color: var(--color-bg);
-		color: var(--color-text);
+		color: var(--color-black);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -74,5 +72,5 @@
 
 ::selection {
 	background-color: var(--color-primary-blue);
-	color: var(--color-primary-white);
+	color: var(--color-white);
 }
