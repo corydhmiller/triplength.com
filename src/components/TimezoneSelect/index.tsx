@@ -1,57 +1,36 @@
 "use client";
 
-import cityTimezones from "city-timezones";
 import { DateTime } from "luxon";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSavedTimezones } from "@hooks/useSavedTimezones";
 import SavedTimezones from "@components/SavedTimezones";
-import { TimezoneItem, CityMappingItem, TimezoneSelectProps } from "./timezoneselect.types";
+import { TimezoneItem, TimezoneSelectProps } from "./timezoneselect.types";
 
 let cachedTimezoneData: TimezoneItem[] | null = null;
+let fetchPromise: Promise<TimezoneItem[]> | null = null;
 
-function getTimezoneData(): TimezoneItem[] {
+async function getTimezoneData(): Promise<TimezoneItem[]> {
 	if (cachedTimezoneData) {
 		return cachedTimezoneData;
 	}
 
-	const ianaZones = Intl.supportedValuesOf("timeZone");
+	// Reuse the same fetch promise if already in flight
+	if (!fetchPromise) {
+		fetchPromise = fetch('/data/timezones.json')
+			.then(res => res.json())
+			.then(data => {
+				cachedTimezoneData = data;
+				fetchPromise = null;
+				return data;
+			})
+			.catch(err => {
+				fetchPromise = null;
+				console.error('Failed to load timezone data:', err);
+				return [];
+			});
+	}
 
-	const baseTimezoneData: TimezoneItem[] = ianaZones.map(zone => {
-		const parts = zone.split("/");
-		const region = parts[0];
-		const city = parts[parts.length - 1].replace(/_/g, " ");
-		const now = DateTime.now().setZone(zone);
-		return {
-			id: zone,
-			region,
-			city,
-			abbr: now.offsetNameShort || "",
-			searchString: `${zone} ${region} ${city} ${now.offsetNameShort}`.toLowerCase(),
-		};
-	});
-
-	const cityData: TimezoneItem[] = (cityTimezones.cityMapping as CityMappingItem[]).map(city => {
-		const now = DateTime.now().setZone(city.timezone);
-		return {
-			id: city.timezone,
-			region: city.province || city.country,
-			city: city.city,
-			abbr: now.offsetNameShort || "",
-			searchString: `${city.city} ${city.province} ${city.country} ${city.timezone} ${now.offsetNameShort}`.toLowerCase(),
-		};
-	});
-
-	const combinedData = [...baseTimezoneData, ...cityData];
-	const seen = new Set();
-	const deduplicated = combinedData.filter(item => {
-		const key = `${item.city}-${item.id}`;
-		if (seen.has(key)) return false;
-		seen.add(key);
-		return true;
-	});
-
-	cachedTimezoneData = deduplicated;
-	return deduplicated;
+	return fetchPromise;
 }
 
 export default function TimezoneSelect({ label, id, placeholder, value, onChange }: TimezoneSelectProps) {
@@ -59,15 +38,22 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 	const [isOpen, setIsOpen] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(-1);
 	const [selectedValue, setSelectedValue] = useState(value || "");
+	const [timezoneData, setTimezoneData] = useState<TimezoneItem[]>([]);
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const timezoneData = getTimezoneData();
 	const { savedTimezones, saveTimezone, clearAllTimezones } = useSavedTimezones();
 
+	// Load timezone data on mount
+	useEffect(() => {
+		getTimezoneData().then(data => setTimezoneData(data));
+	}, []);
+
 	const filteredData = useMemo(() => {
+		if (timezoneData.length === 0) return [];
+
 		const filterLower = searchValue.toLowerCase();
 		return timezoneData
 			.filter(z => z.searchString.includes(filterLower))
@@ -78,21 +64,30 @@ export default function TimezoneSelect({ label, id, placeholder, value, onChange
 				if (bCity === filterLower && aCity !== filterLower) return 1;
 				return 0;
 			})
-			.slice(0, 50);
-	}, [searchValue, selectedValue]);
+			.slice(0, 50)
+			.map(z => {
+				// Calculate abbreviation on the fly for the filtered results only
+				const now = DateTime.now().setZone(z.id);
+				return {
+					...z,
+					abbr: now.offsetNameShort || "",
+				};
+			});
+	}, [searchValue, timezoneData]);
 
 	useEffect(() => {
 		if (value) {
 			setSelectedValue(value);
 			const zone = timezoneData.find(z => z.id === value);
 			if (zone) {
-				setSearchValue(`${zone.city} (${zone.abbr})`);
+				const now = DateTime.now().setZone(zone.id);
+				setSearchValue(`${zone.city} (${now.offsetNameShort || ""})`);
 			}
 		} else {
 			setSelectedValue("");
 			setSearchValue("");
 		}
-	}, [value]);
+	}, [value, timezoneData]);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {

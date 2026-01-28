@@ -6,6 +6,7 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "next dev --turbo",
+		"prebuild": "node scripts/generate-timezone-data.mjs",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
