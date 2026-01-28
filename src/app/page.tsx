@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function Home() {
 	return (
 		<>
-			<main className="max-w-[1240px] w-full mt-xl mb-xxl px-6 z-10">
+			<main className="max-w-310 w-full mt-xl mb-xxl px-6 z-10">
 				<div className="text-center mb-xl">
 					<h1 className="text-black font-extrabold text-[clamp(2rem,5vw,4rem)]">Travel Time Calculator</h1>
 					<p className="text-[1.1rem] text-muted mt-sm">Calculate exact travel duration between cities with automatic timezone and DST handling</p>
@@ -22,7 +22,7 @@ export default function Home() {
 			</main>
 
 			<section className="w-full bg-white border-t border-b border-white-soft mt-lg py-xl z-10">
-				<div className="max-w-[1240px] mx-auto px-6">
+				<div className="max-w-310 mx-auto px-6">
 					<h2 className="text-[1.8rem] font-extrabold text-black mb-lg text-center">Why use this travel time calculator?</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-lg text-[0.95rem] mb-xl">
 						<div>

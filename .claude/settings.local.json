@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(du:*)",
+      "Read(//Users/corymiller/developer/triplength.com/**)",
+      "Bash(curl:*)"
+    ]
+  }
+}
