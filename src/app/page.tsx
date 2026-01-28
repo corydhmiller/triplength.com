@@ -3,8 +3,8 @@ import Information from "@components/Information";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Travel Time Calculator - Calculate Trip Duration Between Cities | TripLength",
-	description: "Free travel time calculator with automatic timezone conversion. Calculate exact travel duration between any cities worldwide. Handles time zones, DST, and air travel time automatically. Perfect for flights and international trips.",
+	title: "Calculate Travel Time with Timezones | TripLength",
+	description: "Get instant travel time between cities with automatic timezone and DST handling. Perfect for planning international flights and trips.",
 };
 
 export default function Home() {
